@@ -1109,7 +1109,7 @@ get_maybe_foreign_type_info(ModuleInfo, Type) = MaybeForeignTypeInfo :-
         search_type_ctor_defn(TypeTable, TypeCtor, TypeDefn),
         hlds_data.get_type_defn_body(TypeDefn, TypeBody),
         TypeBody = hlds_foreign_type(
-            foreign_type_body(MaybeC, _MaybeJava, _MaybeCSharp))
+            foreign_type_body(MaybeC, _MaybeJava, _MaybeCSharp, _MaybeOcaml))
     then
         (
             MaybeC = yes(Data),
