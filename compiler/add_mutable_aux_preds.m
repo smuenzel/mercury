@@ -200,6 +200,7 @@ check_mutable(ModuleInfo, ItemMutable, !Specs) :-
         ( CompilationTarget = target_c
         ; CompilationTarget = target_java
         ; CompilationTarget = target_csharp
+        ; CompilationTarget = target_ocaml
         )
     ),
 

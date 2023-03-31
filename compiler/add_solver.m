@@ -206,6 +206,9 @@ get_solver_type_aux_pred_defns(Target, SolverAuxPredInfo,
     ;
         Target = target_java,
         Lang = lang_java
+    ;
+        Target = target_ocaml,
+        Lang = lang_ocaml
     ),
 
     Attrs0 = default_attributes(Lang),
