@@ -459,7 +459,8 @@ cons_id_is_const_struct(ConsId, ConstNum) :-
 :- type generic_language_foreign_type
     --->    c(c_foreign_type)
     ;       java(java_foreign_type)
-    ;       csharp(csharp_foreign_type).
+    ;       csharp(csharp_foreign_type)
+    ;       ocaml(ocaml_foreign_type).
 
 :- type c_foreign_type
     --->    c_type(
@@ -474,6 +475,11 @@ cons_id_is_const_struct(ConsId, ConstNum) :-
 :- type csharp_foreign_type
     --->    csharp_type(
                 string      % The C# type name
+            ).
+
+:- type ocaml_foreign_type
+    --->    ocaml_type(
+                string      % The OCaml type name
             ).
 
 :- type foreign_type_assertions

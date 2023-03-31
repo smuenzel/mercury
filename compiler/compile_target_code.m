@@ -2617,6 +2617,9 @@ process_link_library(Globals, MercuryLibDirs, LibName, LinkerOpt,
     ;
         Target = target_java,
         unexpected($pred, "target_java")
+    ;
+        Target = target_ocaml,
+        unexpected($pred, "target_ocaml")
     ),
 
     globals.lookup_accumulating_option(Globals, mercury_libraries,

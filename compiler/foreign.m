@@ -206,6 +206,9 @@ maybe_foreign_type_to_string(Lang, Type, MaybeForeignType) = String :-
     ;
         Lang = lang_java,
         String = maybe_foreign_type_to_java_string(Type, MaybeForeignType)
+    ;
+        Lang = lang_ocaml,
+        String = maybe_foreign_type_to_ocaml_string(Type, MaybeForeignType)
     ).
 
 maybe_foreign_type_to_c_string(Type, MaybeForeignType) = String :-
@@ -443,7 +446,8 @@ foreign_type_body_to_exported_type(ModuleInfo, ForeignTypeBody, Name,
     % foreign_type_to_mlds_type in mlds.m.
     % Any changes here may require changes there as well.
 
-    ForeignTypeBody = foreign_type_body(MaybeC, MaybeJava, MaybeCSharp),
+    ForeignTypeBody = foreign_type_body(MaybeC, MaybeJava, MaybeCSharp,
+        MaybeOCaml),
     module_info_get_globals(ModuleInfo, Globals),
     globals.get_target(Globals, Target),
     (
@@ -478,6 +482,17 @@ foreign_type_body_to_exported_type(ModuleInfo, ForeignTypeBody, Name,
         ;
             MaybeJava = no,
             unexpected($pred, "no Java type")
+        )
+    ;
+        Target = target_ocaml,
+        (
+            MaybeOCaml = yes(Data),
+            Data = type_details_foreign(ocaml_type(NameStr), MaybeUserEqComp,
+                Assertions),
+            Name = unqualified(NameStr)
+        ;
+            MaybeOCaml = no,
+            unexpected($pred, "no OCaml type")
         )
     ).
 
@@ -572,6 +587,7 @@ extrude_pragma_implementation_2(TargetLanguage, ForeignLanguage,
         ;
             ( ForeignLanguage = lang_c
             ; ForeignLanguage = lang_java
+            ; ForeignLanguage = lang_ocaml
             ),
             unimplemented_combination(TargetLanguage, ForeignLanguage)
         )
@@ -581,6 +597,18 @@ extrude_pragma_implementation_2(TargetLanguage, ForeignLanguage,
             ForeignLanguage = lang_java
         ;
             ( ForeignLanguage = lang_c
+            ; ForeignLanguage = lang_csharp
+            ; ForeignLanguage = lang_ocaml
+            ),
+            unimplemented_combination(TargetLanguage, ForeignLanguage)
+        )
+    ;
+        TargetLanguage = lang_ocaml,
+        (
+            ForeignLanguage = lang_java
+        ;
+            ( ForeignLanguage = lang_c
+            ; ForeignLanguage = lang_java
             ; ForeignLanguage = lang_csharp
             ),
             unimplemented_combination(TargetLanguage, ForeignLanguage)
