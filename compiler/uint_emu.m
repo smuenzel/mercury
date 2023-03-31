@@ -76,6 +76,9 @@ target_bits_per_uint(Globals, bits_per_uint(BitsPerUInt)) :-
         ; Target = target_java
         ),
         BitsPerUInt = 32
+    ;
+        Target = target_ocaml,
+        BitsPerUInt = 62
     ).
 
 %----------------------------------------------------------------------------%
