@@ -295,6 +295,10 @@ grade_structure_to_grade_string(WhichGradeString, GradeStructure) = GradeStr :-
             MLDSTarget = mlds_target_java(SSDebug),
             SSDebugStrs = ssdebug_to_strs(WhichGradeString, SSDebug),
             GradeComponents = ["java" | SSDebugStrs] ++ TargetDebugStrs
+        ;
+            MLDSTarget = mlds_target_ocaml(SSDebug),
+            SSDebugStrs = ssdebug_to_strs(WhichGradeString, SSDebug),
+            GradeComponents = ["ocaml" | SSDebugStrs] ++ TargetDebugStrs
         )
     ),
     (
@@ -598,6 +602,12 @@ translate_grade_component(ComponentStr, Setting, Settings) :-
     ;
         ComponentStr = "java",
         Setting = svar_target - svalue_target_java,
+        Settings =
+            [svar_backend - svalue_backend_mlds,
+            svar_gcc_conf - svalue_gcc_conf_none]
+    ;
+        ComponentStr = "ocaml",
+        Setting = svar_target - svalue_target_ocaml,
         Settings =
             [svar_backend - svalue_backend_mlds,
             svar_gcc_conf - svalue_gcc_conf_none]

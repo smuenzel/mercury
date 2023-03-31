@@ -186,6 +186,9 @@ generate_mlds_tests(GradeStructure) :-
     ;
         generate_grade_var_ssdebug(SSDebug),
         MLDSTarget = mlds_target_java(SSDebug)
+    ;
+        generate_grade_var_ssdebug(SSDebug),
+        MLDSTarget = mlds_target_ocaml(SSDebug)
     ),
     generate_grade_var_target_debug(TargetDebug),
     GradeStructure = grade_mlds(MLDSTarget, TargetDebug).

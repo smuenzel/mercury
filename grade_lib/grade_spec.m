@@ -100,6 +100,7 @@
     ;       svalue_target_c
     ;       svalue_target_csharp
     ;       svalue_target_java
+    ;       svalue_target_ocaml
 
     ;       svalue_gcc_conf_none       % used for non-LLDS backends
     ;       svalue_gcc_conf_reg
@@ -329,7 +330,8 @@ init_solver_var_specs(SpecsVersion) = Specs :-
         solver_var_spec(svar_backend,
             [svalue_backend_mlds, svalue_backend_llds]),
         solver_var_spec(svar_target,
-            [svalue_target_c, svalue_target_csharp, svalue_target_java]),
+            [svalue_target_c, svalue_target_csharp,
+            svalue_target_java, svalue_target_ocaml]),
 
         solver_var_spec(svar_gcc_conf,
             % XXX The order of preference here is partially speed,
@@ -463,6 +465,11 @@ init_requirement_specs = [
         (svar_target `being` svalue_target_java) `implies_that`
         (svar_backend `is_one_of` [svalue_backend_mlds])
     ),
+    requirement_spec(
+        "Targeting OCaml requires the MLDS backend.",
+        (svar_target `being` svalue_target_ocaml) `implies_that`
+        (svar_backend `is_one_of` [svalue_backend_mlds])
+    ),
 
     requirement_spec(
         "C does not have a native garbage collector.",
@@ -480,6 +487,11 @@ init_requirement_specs = [
         (svar_target `being` svalue_target_java) `implies_that`
         (svar_gc `is_one_of` [svalue_gc_target_native])
     ),
+    requirement_spec(
+        "Targeting OCaml requires target native gc.",
+        (svar_target `being` svalue_target_ocaml) `implies_that`
+        (svar_gc `is_one_of` [svalue_gc_target_native])
+    ),
 
     requirement_spec(
         "C does not have its own native threading model.",
@@ -495,6 +507,11 @@ init_requirement_specs = [
     requirement_spec(
         "Generating Java implies using the Java threading model.",
         (svar_target `being` svalue_target_java) `implies_that`
+        (svar_thread_safe `is_one_of` [svalue_thread_safe_target_native])
+    ),
+    requirement_spec(
+        "Generating OCaml implies using the OCaml threading model.",
+        (svar_target `being` svalue_target_ocaml) `implies_that`
         (svar_thread_safe `is_one_of` [svalue_thread_safe_target_native])
     ),
 

@@ -83,7 +83,8 @@
 :- type grade_var_target
     --->    grade_var_target_c
     ;       grade_var_target_csharp
-    ;       grade_var_target_java.
+    ;       grade_var_target_java
+    ;       grade_var_target_ocaml.
 
 :- type grade_var_nested_funcs
     --->    grade_var_nested_funcs_no
@@ -258,6 +259,8 @@ success_map_to_grade_vars(!.SuccMap) = GradeVars :-
         GradeVarTarget = grade_var_target_csharp
     else if Target = svalue_target_java then
         GradeVarTarget = grade_var_target_java
+    else if Target = svalue_target_ocaml then
+        GradeVarTarget = grade_var_target_ocaml
     else
         unexpected($pred, "unexpected value of Target")
     ),

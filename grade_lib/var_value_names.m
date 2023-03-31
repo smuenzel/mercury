@@ -93,6 +93,7 @@ solver_var_value_name("llds",                   svalue_backend_llds).
 solver_var_value_name("c",                      svalue_target_c).
 solver_var_value_name("csharp",                 svalue_target_csharp).
 solver_var_value_name("java",                   svalue_target_java).
+solver_var_value_name("ocaml",                  svalue_target_ocaml).
 
 solver_var_value_name("none",                   svalue_gcc_conf_none).
 solver_var_value_name("reg",                    svalue_gcc_conf_reg).
