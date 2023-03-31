@@ -262,7 +262,8 @@ write_type_body(Info, Stream, _TypeCtor, TypeBody, TVarSet, !IO) :-
         io.write_string(Stream, ".\n", !IO)
     ;
         TypeBody = hlds_foreign_type(ForeignTypeBody),
-        ForeignTypeBody = foreign_type_body(MaybeC, MaybeJava, MaybeCsharp),
+        ForeignTypeBody = foreign_type_body(MaybeC, MaybeJava, MaybeCsharp,
+            MaybeOcaml),
         (
             MaybeC = no,
             MaybeCStr = "no_c"
@@ -299,13 +300,26 @@ write_type_body(Info, Stream, _TypeCtor, TypeBody, TVarSet, !IO) :-
                 s(maybe_canonical_to_simple_string(CsharpCanonical)),
                 s(foreign_type_assertions_to_simple_string(CsharpAssertions))])
         ),
+        (
+            MaybeOcaml = no,
+            MaybeOcamlStr = "no_ocaml"
+        ;
+            MaybeOcaml = yes(Ocaml),
+            Ocaml = type_details_foreign(ocaml_type(OcamlTypeName),
+                OcamlCanonical, OcamlAssertions),
+            MaybeOcamlStr = string.format("ocaml(%s, %s, %s)",
+                [s(OcamlTypeName),
+                s(maybe_canonical_to_simple_string(OcamlCanonical)),
+                s(foreign_type_assertions_to_simple_string(OcamlAssertions))])
+        ),
         % What we output is not valid Mercury syntax, but it is easier
         % to read than valid Mercury syntax would be.
         Indent1Str = indent_string(BaseIndent + 1),
-        io.format(Stream, " is foreign_type(\n%s%s,\n%s%s,\n%s%s\n%s).\n",
+        io.format(Stream, " is foreign_type(\n%s%s,\n%s%s,\n%s%s\n%s%s\n%s).\n",
             [s(Indent1Str), s(MaybeCStr),
             s(Indent1Str), s(MaybeJavaStr),
             s(Indent1Str), s(MaybeCsharpStr),
+            s(Indent1Str), s(MaybeOcamlStr),
             s(IndentStr)], !IO)
     ;
         TypeBody = hlds_solver_type(DetailsSolver),
