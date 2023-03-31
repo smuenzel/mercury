@@ -68,10 +68,13 @@
     maybe(foreign_type_and_assertions)) = string.
 :- func maybe_foreign_type_to_java_string(mer_type,
     maybe(foreign_type_and_assertions)) = string.
+:- func maybe_foreign_type_to_ocaml_string(mer_type,
+    maybe(foreign_type_and_assertions)) = string.
 
 :- func exported_builtin_type_to_c_string(builtin_type) = string.
 :- func exported_builtin_type_to_csharp_string(builtin_type) = string.
 :- func exported_builtin_type_to_java_string(builtin_type) = string.
+:- func exported_builtin_type_to_ocaml_string(builtin_type) = string.
 
 %-----------------------------------------------------------------------------%
 
@@ -303,6 +306,29 @@ maybe_foreign_type_to_java_string(Type, MaybeForeignType) = String :-
         )
     ).
 
+maybe_foreign_type_to_ocaml_string(Type, MaybeForeignType) = String :-
+    (
+        MaybeForeignType = yes(foreign_type_and_assertions(ForeignType, _)),
+        String = sym_name_to_string(ForeignType)
+    ;
+        MaybeForeignType = no,
+        (
+            Type = builtin_type(BuiltinType),
+            String = exported_builtin_type_to_ocaml_string(BuiltinType)
+        ;
+            ( Type = tuple_type(_, _)
+            ; Type = defined_type(_, _, _)
+            ; Type = higher_order_type(_, _, _, _, _)
+            ; Type = apply_n_type(_, _, _)
+            ; Type = type_variable(_, _)
+            ; Type = kinded_type(_, _)
+            ),
+            % This is here so we can share some code between C/C#/Java
+            % backends. This is not the correct type to use in general.
+            String = "java.lang.Object"
+        )
+    ).
+
 exported_builtin_type_to_c_string(BuiltinType) = CTypeName :-
     (
         BuiltinType = builtin_type_int(IntType),
@@ -438,6 +464,51 @@ exported_builtin_type_to_java_string(BuiltinType) = JavaTypeName :-
         JavaTypeName = "char"
     ).
 
+exported_builtin_type_to_ocaml_string(BuiltinType) = OcamlTypeName :-
+    (
+        BuiltinType = builtin_type_int(IntType),
+        (
+            IntType = int_type_int,
+            OcamlTypeName = "int"
+        ;
+            IntType = int_type_uint,
+            OcamlTypeName = "int"
+        ;
+            IntType= int_type_int8,
+            OcamlTypeName = "int"
+        ;
+            IntType = int_type_uint8,
+            OcamlTypeName = "int"
+        ;
+            IntType = int_type_int16,
+            OcamlTypeName = "int"
+        ;
+            IntType = int_type_uint16,
+            OcamlTypeName = "int"
+        ;
+            IntType = int_type_int32,
+            OcamlTypeName = "int"
+        ;
+            IntType = int_type_uint32,
+            OcamlTypeName = "int"
+        ;
+            IntType = int_type_int64,
+            OcamlTypeName = "int"
+        ;
+            IntType = int_type_uint64,
+            OcamlTypeName = "int"
+        )
+    ;
+        BuiltinType = builtin_type_float,
+        OcamlTypeName = "float"
+    ;
+        BuiltinType = builtin_type_string,
+        OcamlTypeName = "string"
+    ;
+        BuiltinType = builtin_type_char,
+        OcamlTypeName = "int"
+    ).
+
 %-----------------------------------------------------------------------------%
 
 foreign_type_body_to_exported_type(ModuleInfo, ForeignTypeBody, Name,
@@ -506,6 +577,9 @@ have_foreign_type_for_backend(Target, ForeignTypeBody, Have) :-
     ;
         Target = target_csharp,
         Have = ( if ForeignTypeBody ^ csharp = yes(_) then yes else no )
+    ;
+        Target = target_ocaml,
+        Have = ( if ForeignTypeBody ^ ocaml = yes(_) then yes else no )
     ).
 
 foreign_type_body_has_user_defined_eq_comp_pred(ModuleInfo, Body,
@@ -577,6 +651,7 @@ extrude_pragma_implementation_2(TargetLanguage, ForeignLanguage,
         ;
             ( ForeignLanguage = lang_csharp
             ; ForeignLanguage = lang_java
+            ; ForeignLanguage = lang_ocaml
             ),
             unimplemented_combination(TargetLanguage, ForeignLanguage)
         )
@@ -605,7 +680,7 @@ extrude_pragma_implementation_2(TargetLanguage, ForeignLanguage,
     ;
         TargetLanguage = lang_ocaml,
         (
-            ForeignLanguage = lang_java
+            ForeignLanguage = lang_ocaml
         ;
             ( ForeignLanguage = lang_c
             ; ForeignLanguage = lang_java
