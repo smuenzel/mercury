@@ -438,6 +438,8 @@
     ;       java_only           % target java + target_code_only
     ;       csharp              % target csharp
     ;       csharp_only         % target csharp + target_code_only
+    ;       ocaml               % target ocaml
+    ;       ocaml_only          % target ocaml + target_code_only
 
     % Compilation model options for optional features:
 
@@ -975,6 +977,8 @@
     ;       quoted_csharp_flag
     ;       cli_interpreter
 
+    % OCaml
+
     % Link options
     ;       output_file_name
     ;       ld_flags
@@ -1492,6 +1496,8 @@ optdef(oc_grade, csharp,                                special).
 optdef(oc_grade, csharp_only,                           special).
 optdef(oc_grade, java,                                  special).
 optdef(oc_grade, java_only,                             special).
+optdef(oc_grade, ocaml,                                 special).
+optdef(oc_grade, ocaml_only,                            special).
 
     % Optional feature compilation model options:
     % (a) Debuggging
@@ -1917,6 +1923,8 @@ optdef(oc_target_comp, csharp_compiler,                 string("csc")).
 optdef(oc_target_comp, csharp_flags,                    accumulating([])).
 optdef(oc_target_comp, quoted_csharp_flag,              string_special).
 optdef(oc_target_comp, cli_interpreter,                 string("")).
+
+    % OCaml
 
     % Link Options.
 
@@ -2450,6 +2458,12 @@ long_option("csharp",               csharp).
 long_option("C#",                   csharp).
 long_option("csharp-only",          csharp_only).
 long_option("C#-only",              csharp_only).
+long_option("ocaml",                ocaml).
+long_option("Ocaml",                ocaml).
+long_option("OCaml",                ocaml).
+long_option("ocaml-only",           ocaml_only).
+long_option("Ocaml-only",           ocaml_only).
+long_option("OCaml-only",           ocaml_only).
 % Optional features compilation model options:
 % (a) debugging
 long_option("debug",                exec_trace).
@@ -3291,6 +3305,15 @@ special_handler(Option, SpecialData, !.OptionTable, Result, !OptOptions) :-
             Option = csharp_only,
             SpecialData = none,
             map.set(target, string("csharp"), !OptionTable),
+            map.set(only_opmode_target_code_only, bool(yes), !OptionTable)
+        ;
+            Option = ocaml,
+            SpecialData = none,
+            map.set(target, string("ocaml"), !OptionTable)
+        ;
+            Option = ocaml_only,
+            SpecialData = none,
+            map.set(target, string("ocaml"), !OptionTable),
             map.set(only_opmode_target_code_only, bool(yes), !OptionTable)
         ;
             Option = profiling,
@@ -5172,8 +5195,8 @@ options_help_compilation_model(Stream, !IO) :-
     write_tabbed_lines(Stream, [
         "-s <grade>, --grade <grade>",
         "\tSelect the compilation model. The <grade> should be one of",
-        "\tthe base grades `none', `reg', `asm_fast', `hlc', `java' or,",
-        "\t`csharp'.",
+        "\tthe base grades `none', `reg', `asm_fast', `hlc', `java',",
+        "\t`csharp', 'ocaml'.",
 
 % The following base grade components are not publicly documented:
 %
@@ -5204,6 +5227,7 @@ options_help_compilation_model(Stream, !IO) :-
         %"\t\t\t\t\tasm_jump, asm_fast, hl, hlc)",
         "--target c\t\t\t(grades: none, reg, asm_fast, hlc)",
         "--target csharp\t\t\t(grades: csharp)",
+        "--target ocaml\t\t\t(grades: ocaml)",
         "--target java\t\t\t(grades: java)",
         "\tSpecify the target language: C, C# or Java.",
         "\tThe default is C.",
@@ -5221,6 +5245,13 @@ options_help_compilation_model(Stream, !IO) :-
         "--java-only",
         "\tAn abbreviation for `--target java --target-code-only'.",
         "\tGenerate Java code in `<module>.java', but do not generate",
+        "\tobject code.",
+
+        "--ocaml",
+        "\tAn abbreviation for `--target ocaml'.",
+        "--ocaml-only",
+        "\tAn abbreviation for `--target ocaml --target-code-only'.",
+        "\tGenerate OCaml code in `<module>.ml', but do not generate",
         "\tobject code.",
 
         "--compile-to-c",
@@ -5366,7 +5397,7 @@ options_help_compilation_model(Stream, !IO) :-
     write_tabbed_lines(Stream, [
         "--gc {none, boehm, hgc, accurate, automatic}",
         "--garbage-collection {none, boehm, hgc, accurate, automatic}",
-        "\t\t\t\t(`java' and `csharp' grades",
+        "\t\t\t\t(`java', `csharp' and 'ocaml' grades",
         "\t\t\t\t\t use `--gc automatic',",
         "\t\t\t\t`.gc' grades use `--gc boehm',",
         "\t\t\t\t`.hgc' grades use `--gc hgc',",
@@ -5456,7 +5487,7 @@ options_help_compilation_model(Stream, !IO) :-
     io.write_string(Stream,
         "\n    MLDS back-end compilation model options:\n", !IO),
     write_tabbed_lines(Stream, [
-        "-H, --high-level-code\t\t\t(grades: hlc, csharp, java)",
+        "-H, --high-level-code\t\t\t(grades: hlc, csharp, java, ocaml)",
         "\tUse an alternative back-end that generates high-level code",
         "\trather than the very low-level code that is generated by our",
         "\toriginal back-end.",
