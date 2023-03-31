@@ -614,6 +614,12 @@ build_object_code(Globals, ModuleName, Target, PIC,
             ext_other(other_ext(".cs")), ModuleName, CsharpFile, !IO),
         compile_target_code.link(Globals, ProgressStream, ErrorStream,
             csharp_library, ModuleName, [CsharpFile], Succeeded, !IO)
+    ;
+        Target = target_ocaml,
+        module_name_to_file_name(Globals, $pred, do_create_dirs,
+            ext_other(other_ext(".ml")), ModuleName, OcamlFile, !IO),
+        compile_ocaml_files(Globals, ProgressStream, ErrorStream,
+            OcamlFile, [], Succeeded, !IO)
     ).
 
 :- pred compile_foreign_code_file(globals::in,
@@ -1130,6 +1136,7 @@ external_foreign_code_files(Globals, PIC, ModuleDepInfo, ForeignFiles, !IO) :-
     ;
         ( CompilationTarget = target_java
         ; CompilationTarget = target_csharp
+        ; CompilationTarget = target_ocaml
         ),
         ForeignFiles = []
     ).

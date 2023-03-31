@@ -71,6 +71,13 @@
     module_dep_info::in, file_name::in, file_name::in, maybe_succeeded::out,
     io::di, io::uo) is det.
 
+    % compile_ocaml_files(Globals, ProgressStream, ErrorStream,
+    %   HeadOcamlFile, TailOcamlFiles, Succeeded, !IO)
+    %
+:- pred compile_ocaml_files(globals::in,
+    io.text_output_stream::in, io.text_output_stream::in,
+    string::in, list(string)::in, maybe_succeeded::out, io::di, io::uo) is det.
+
     % make_library_init_file(Globals, ProgressStream, ErrorStream,
     %   MainModuleName, ModuleNames, Succeeded, !IO):
     %
