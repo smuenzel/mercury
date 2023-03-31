@@ -58,7 +58,8 @@
 :- type compilation_target
     --->    target_c        % Generate C code (including GNU C).
     ;       target_csharp   % Generate C#.
-    ;       target_java.    % Generate Java.
+    ;       target_java     % Generate Java.
+    ;       target_ocaml.   % Generate OCaml
 
     % If you ever uncomment lang_cplusplus, you should also uncomment
     % the corresponding field in the foreign_import_modules type.
@@ -66,7 +67,8 @@
     --->    lang_c
 %   ;       lang_cplusplus
     ;       lang_csharp
-    ;       lang_java.
+    ;       lang_java
+    ;       lang_ocaml.
 
     % A string representation of the compilation target suitable
     % for use in human-readable error messages.
@@ -472,28 +474,33 @@
 compilation_target_string(target_c) = "C".
 compilation_target_string(target_csharp) = "C#".
 compilation_target_string(target_java) = "Java".
+compilation_target_string(target_ocaml) = "OCaml".
 
 compilation_target_high_level_data(target_c) = no.
 compilation_target_high_level_data(target_csharp) = yes.
 compilation_target_high_level_data(target_java) = yes.
+compilation_target_high_level_data(target_ocaml) = yes.
 
 target_lang_to_foreign_export_lang(target_c) = lang_c.
 target_lang_to_foreign_export_lang(target_csharp) = lang_csharp.
 target_lang_to_foreign_export_lang(target_java) = lang_java.
+target_lang_to_foreign_export_lang(target_ocaml) = lang_ocaml.
 
 foreign_language_string(lang_c) = "C".
 foreign_language_string(lang_csharp) = "C#".
 foreign_language_string(lang_java) = "Java".
+foreign_language_string(lang_ocaml) = "OCaml".
 
 simple_foreign_language_string(lang_c, "c").
 simple_foreign_language_string(lang_csharp, "csharp").
 simple_foreign_language_string(lang_java, "java").
+simple_foreign_language_string(lang_ocaml, "ocaml").
 
 simple_foreign_language_string(Lang) = Str :-
     simple_foreign_language_string(Lang, Str).
 
 all_foreign_language_strings =
-    ["c", "C", "csharp", "C#", "java", "Java"].
+    ["c", "C", "csharp", "C#", "java", "Java"; "ocaml"; "OCaml"].
 
 gc_is_conservative(gc_boehm) = yes.
 gc_is_conservative(gc_boehm_debug) = yes.
@@ -511,6 +518,7 @@ convert_target(String, Target) :-
 
 convert_target_2("csharp", target_csharp).
 convert_target_2("java", target_java).
+convert_target_2("ocaml", target_ocaml).
 convert_target_2("c", target_c).
 
 :- pred convert_foreign_language_det(string::in, foreign_language::out) is det.
@@ -533,6 +541,7 @@ convert_foreign_language_2("c#", lang_csharp).
 convert_foreign_language_2("csharp", lang_csharp).
 convert_foreign_language_2("c sharp", lang_csharp).
 convert_foreign_language_2("java", lang_java).
+convert_foreign_language_2("ocaml", lang_ocaml).
 
 convert_gc_method("none", gc_none).
 convert_gc_method("conservative", gc_boehm).
@@ -1019,6 +1028,7 @@ current_grade_supports_concurrency(Globals, ThreadsSupported) :-
     ;
         ( Target = target_java
         ; Target = target_csharp
+        ; Target = target_ocaml
         ),
         ThreadsSupported = yes
     ).

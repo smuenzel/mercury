@@ -97,6 +97,7 @@ check_grade_component_compatibility(Globals, Target, GC_Method, !Specs) :-
     ;
         ( Target = target_csharp
         ; Target = target_java
+        ; Target = target_ocaml
         ),
         (
             % At this point, both of these values are acceptable for the
@@ -135,6 +136,7 @@ check_grade_component_compatibility(Globals, Target, GC_Method, !Specs) :-
         (
             ( Target = target_java
             ; Target = target_csharp
+            ; Target = target_ocaml
             ),
             TimeProfpec =
                 [words("Time profiling is incompatible with"),
@@ -155,6 +157,7 @@ check_grade_component_compatibility(Globals, Target, GC_Method, !Specs) :-
         (
             ( Target = target_java
             ; Target = target_csharp
+            ; Target = target_ocaml
             ),
             MemProfpec =
                 [words("Memory profiling is incompatible with"),
@@ -181,6 +184,7 @@ check_grade_component_compatibility(Globals, Target, GC_Method, !Specs) :-
         (
             ( Target = target_java
             ; Target = target_csharp
+            ; Target = target_ocaml
             ),
             TrailSpec =
                 [words("Trailing is incompatible with"),
@@ -213,6 +217,7 @@ check_grade_component_compatibility(Globals, Target, GC_Method, !Specs) :-
         ;
             ( Target = target_java
             ; Target = target_csharp
+            ; Target = target_ocaml
             ),
             StackSegmentpec =
                 [words("Stack segments are incompatible with"),
@@ -231,6 +236,7 @@ check_grade_component_compatibility(Globals, Target, GC_Method, !Specs) :-
         (
             ( Target = target_java
             ; Target = target_csharp
+            ; Target = target_ocaml
             ),
             SPFSpec =
                 [words("Single precision floats are incompatible with"),
@@ -584,6 +590,12 @@ grade_component_table("csharp", comp_gcc_ext, [
         gcc_global_registers    - bool(no),
         highlevel_code          - bool(yes)],
         yes([string("csharp")]), yes).
+grade_component_table("ocaml", comp_gcc_ext, [
+        asm_labels              - bool(no),
+        gcc_non_local_gotos     - bool(no),
+        gcc_global_registers    - bool(no),
+        highlevel_code          - bool(yes)],
+        yes([string("ocaml")]), yes).
 
     % Parallelism/multithreading components.
 grade_component_table("par", comp_par, [parallel - bool(yes)], no, yes).
