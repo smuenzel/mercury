@@ -184,6 +184,7 @@ cons_id_to_tag(ModuleInfo, ConsId) = ConsTag:-
             % dummy integer tags results in invalid code being generated.
             ( TargetLang = target_csharp
             ; TargetLang = target_java
+            ; TargetLang = target_ocaml
             ),
             ConsTag = remote_args_tag(remote_args_only_functor)
         )
