@@ -616,10 +616,8 @@ build_object_code(Globals, ModuleName, Target, PIC,
             csharp_library, ModuleName, [CsharpFile], Succeeded, !IO)
     ;
         Target = target_ocaml,
-        module_name_to_file_name(Globals, $pred, do_create_dirs,
-            ext_other(other_ext(".ml")), ModuleName, OcamlFile, !IO),
-        compile_ocaml_files(Globals, ProgressStream, ErrorStream,
-            OcamlFile, [], Succeeded, !IO)
+        compile_ocaml_file(Globals, ProgressStream, ErrorStream,
+            PIC, ModuleName, Succeeded, !IO)
     ).
 
 :- pred compile_foreign_code_file(globals::in,
@@ -641,6 +639,10 @@ compile_foreign_code_file(Globals, ProgressStream, ErrorStream, PIC,
         ForeignCodeFile = foreign_code_file(lang_csharp, CSharpFile, DLLFile),
         compile_csharp_file(Globals, ProgressStream, ErrorStream,
             ModuleDepInfo, CSharpFile, DLLFile, Succeeded, !IO)
+    ;
+        ForeignCodeFile = foreign_code_file(lang_ocaml, OcamlFile, ObjFile),
+        do_compile_ocaml_file(Globals, ProgressStream, ErrorStream, PIC,
+            OcamlFile, ObjFile, Succeeded, !IO)
     ).
 
 :- func do_task_in_separate_process(module_compilation_task_type) = bool.
@@ -681,7 +683,11 @@ get_foreign_code_file(Globals, ModuleName, PIC, Lang, ForeignCodeFile, !IO) :-
 get_object_extension(Globals, PIC) = OtherExt :-
     globals.get_target(Globals, CompilationTarget),
     (
-        CompilationTarget = target_c,
+        (
+          CompilationTarget = target_c
+        ;
+          CompilationTarget = target_ocaml
+        ),
         pic_object_file_extension(Globals, PIC, OtherExt)
     ;
         CompilationTarget = target_csharp,
@@ -1052,6 +1058,7 @@ find_files_maybe_touched_by_process_module(Globals, TargetFile, Task,
         ;
             ( CompilationTarget = target_csharp
             ; CompilationTarget = target_java
+            ; CompilationTarget = target_ocaml % FIXME: may need to add mlis
             ),
             HeaderTargets0 = []
         ),
@@ -1065,6 +1072,7 @@ find_files_maybe_touched_by_process_module(Globals, TargetFile, Task,
         ;
             ( CompilationTarget = target_csharp
             ; CompilationTarget = target_java
+            ; CompilationTarget = target_ocaml
             ),
             HeaderTargets = HeaderTargets0
         ),

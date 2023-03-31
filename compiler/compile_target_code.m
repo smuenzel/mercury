@@ -71,10 +71,17 @@
     module_dep_info::in, file_name::in, file_name::in, maybe_succeeded::out,
     io::di, io::uo) is det.
 
-    % compile_ocaml_files(Globals, ProgressStream, ErrorStream, PIC,
-    %   OcamlFile, O_File, Succeeded, !IO)
+    % compile_ocaml_file(Globals, ProgressStream, ErrorStream, PIC,
+    %   ModuleName, Succeeded, !IO)
     %
-:- pred compile_ocaml_files(globals::in,
+:- pred compile_ocaml_file(globals::in,
+    io.text_output_stream::in, io.text_output_stream::in, pic::in,
+    module_name::in, maybe_succeeded::out, io::di, io::uo) is det.
+
+    % do_compile_ocaml_file(Globals, ProgressStream, ErrorStream, PIC,
+    %   OcamlFile, ObjFile, Succeeded, !IO)
+    %
+:- pred do_compile_ocaml_file(globals::in,
     io.text_output_stream::in, io.text_output_stream::in, pic::in,
     string::in, string::in, maybe_succeeded::out, io::di, io::uo) is det.
 
@@ -1105,7 +1112,17 @@ referenced_dlls(Module, DepModules0) = Modules :-
 
 %-----------------------------------------------------------------------------%
 
-compile_ocaml_files(Globals, ProgressStream, ErrorStream,
+compile_ocaml_file(Globals, ProgressStream, ErrorStream, PIC, ModuleName,
+        Succeeded, !IO) :-
+    pic_object_file_extension(Globals, PIC, ObjOtherExt),
+    module_name_to_file_name(Globals, $pred, do_create_dirs,
+        ext_other(other_ext(".ml")), ModuleName, OcamlFile, !IO),
+    module_name_to_file_name(Globals, $pred, do_create_dirs,
+        ext_other(ObjOtherExt), ModuleName, O_File, !IO),
+    do_compile_ocaml_file(Globals, ProgressStream, ErrorStream, PIC,
+        OcamlFile, O_File, Succeeded, !IO).
+
+do_compile_ocaml_file(Globals, ProgressStream, ErrorStream,
         PIC, OcamlFile, O_File, Succeeded, !IO) :-
     globals.lookup_bool_option(Globals, verbose, Verbose),
     globals.lookup_string_option(Globals, ocamlc, OcamlC),
