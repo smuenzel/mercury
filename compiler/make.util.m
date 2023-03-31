@@ -647,6 +647,9 @@ target_type_to_extension(Globals, Target, Ext) :-
         Target = module_target_java_class_code,
         Ext = ext_other(other_ext(".class"))
     ;
+        Target = module_target_ocaml_code,
+        Ext = ext_other(other_ext(".ml"))
+    ;
         Target = module_target_object_code(PIC),
         pic_object_file_extension(Globals, PIC, OtherExt),
         Ext = ext_other(OtherExt)
@@ -820,6 +823,7 @@ module_target_to_file_name_maybe_search(Globals, Search, MkDir, TargetType,
             ; TargetType = module_target_csharp_code
             ; TargetType = module_target_java_code
             ; TargetType = module_target_java_class_code
+            ; TargetType = module_target_ocaml_code
             ; TargetType = module_target_object_code(_)
             ; TargetType = module_target_xml_doc
             ; TargetType = module_target_track_flags
@@ -883,6 +887,7 @@ search_for_file_type(ModuleTargetType) = MaybeSearchOption :-
         ; ModuleTargetType = module_target_csharp_code
         ; ModuleTargetType = module_target_java_code
         ; ModuleTargetType = module_target_java_class_code
+        ; ModuleTargetType = module_target_ocaml_code
         ; ModuleTargetType = module_target_object_code(_)
         ; ModuleTargetType = module_target_foreign_object(_, _)
         ; ModuleTargetType = module_target_fact_table_object(_, _)
@@ -932,6 +937,7 @@ is_target_grade_or_arch_dependent(Target) = IsDependent :-
         ; Target = module_target_csharp_code
         ; Target = module_target_java_code
         ; Target = module_target_java_class_code
+        ; Target = module_target_ocaml_code
         ; Target = module_target_object_code(_)
         ; Target = module_target_foreign_object(_, _)
         ; Target = module_target_fact_table_object(_, _)
@@ -1239,6 +1245,9 @@ module_target_type_to_nonce(Type) = X :-
     ;
         Type = module_target_csharp_code,
         X = 22
+    ;
+        Type = module_target_ocaml_code,
+        X = 23
     ).
 
 :- func pic_to_nonce(pic) = int.

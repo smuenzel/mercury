@@ -407,7 +407,9 @@ search_backwards_for_dot(String, Index, DotIndex) :-
 get_executable_type(Globals) = ExecutableType :-
     globals.get_target(Globals, CompilationTarget),
     (
-        CompilationTarget = target_c,
+        ( CompilationTarget = target_c
+        ; CompilationTarget = target_ocaml
+        ),
         ExecutableType = executable
     ;
         CompilationTarget = target_csharp,
