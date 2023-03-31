@@ -485,17 +485,22 @@ convert_type_defn_to_hlds(TypeDefn, TypeCtor, HLDSBody, !ModuleInfo) :-
             ForeignType = c(CForeignType),
             Data = type_details_foreign(CForeignType, MaybeUserEqComp,
                 Assertions),
-            Body = foreign_type_body(yes(Data), no, no)
+            Body = foreign_type_body(yes(Data), no, no, no)
         ;
             ForeignType = java(JavaForeignType),
             Data = type_details_foreign(JavaForeignType, MaybeUserEqComp,
                 Assertions),
-            Body = foreign_type_body(no, yes(Data), no)
+            Body = foreign_type_body(no, yes(Data), no, no)
         ;
             ForeignType = csharp(CSharpForeignType),
             Data = type_details_foreign(CSharpForeignType, MaybeUserEqComp,
                 Assertions),
-            Body = foreign_type_body(no, no, yes(Data))
+            Body = foreign_type_body(no, no, yes(Data), no)
+        ;
+            ForeignType = ocaml(OcamlForeignType),
+            Data = type_details_foreign(OcamlForeignType, MaybeUserEqComp,
+                Assertions),
+            Body = foreign_type_body(no, no, no, yes(Data))
         ),
         HLDSBody = hlds_foreign_type(Body)
     ).
@@ -574,7 +579,7 @@ merge_foreign_and_du_type_bodies(Globals, ForeignTypeBodyA, TypeBodyDuB,
         MaybeForeignTypeBodyB = yes(ForeignTypeBodyB)
     ;
         MaybeForeignTypeBodyB = no,
-        ForeignTypeBodyB = foreign_type_body(no, no, no)
+        ForeignTypeBodyB = foreign_type_body(no, no, no, no)
     ),
     merge_foreign_type_bodies(ForeignTypeBodyA, ForeignTypeBodyB,
         ForeignTypeBody),
@@ -595,12 +600,15 @@ merge_foreign_and_du_type_bodies(Globals, ForeignTypeBodyA, TypeBodyDuB,
     foreign_type_body::in, foreign_type_body::out) is semidet.
 
 merge_foreign_type_bodies(TypeBodyA, TypeBodyB, TypeBody) :-
-    TypeBodyA = foreign_type_body(MaybeCA, MaybeJavaA, MaybeCSharpA),
-    TypeBodyB = foreign_type_body(MaybeCB, MaybeJavaB, MaybeCSharpB),
+    TypeBodyA = foreign_type_body(MaybeCA, MaybeJavaA, MaybeCSharpA,
+        MaybeOcamlA),
+    TypeBodyB = foreign_type_body(MaybeCB, MaybeJavaB, MaybeCSharpB,
+        MaybeOcamlB),
     merge_maybe(MaybeCA, MaybeCB, MaybeC),
     merge_maybe(MaybeJavaA, MaybeJavaB, MaybeJava),
     merge_maybe(MaybeCSharpA, MaybeCSharpB, MaybeCSharp),
-    TypeBody = foreign_type_body(MaybeC, MaybeJava, MaybeCSharp).
+    merge_maybe(MaybeOcamlA, MaybeOcamlB, MaybeOcaml),
+    TypeBody = foreign_type_body(MaybeC, MaybeJava, MaybeCSharp, MaybeOcaml).
 
 :- pred merge_maybe(maybe(T)::in, maybe(T)::in, maybe(T)::out) is semidet.
 
