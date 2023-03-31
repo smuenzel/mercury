@@ -500,7 +500,7 @@ simple_foreign_language_string(Lang) = Str :-
     simple_foreign_language_string(Lang, Str).
 
 all_foreign_language_strings =
-    ["c", "C", "csharp", "C#", "java", "Java"; "ocaml"; "OCaml"].
+    ["c", "C", "csharp", "C#", "java", "Java", "ocaml", "OCaml"].
 
 gc_is_conservative(gc_boehm) = yes.
 gc_is_conservative(gc_boehm_debug) = yes.

@@ -871,6 +871,10 @@ convert_options_to_globals(ProgressStream, OptionTable0, !.OptTuple, OpMode,
         Target = target_csharp,
         OT_EnableConstStructPoly = do_not_enable_const_struct_poly,
         OT_EnableConstStructUser = do_not_enable_const_struct_user
+    ;
+        Target = target_ocaml,
+        OT_EnableConstStructPoly = do_not_enable_const_struct_poly,
+        OT_EnableConstStructUser = do_not_enable_const_struct_user
     ),
 
     % `--optimize-constant-propagation' effectively inlines builtins.
@@ -1377,6 +1381,7 @@ handle_implications_of_pregen_target_spf(!Globals, Target,
     ;
         ( Target = target_java
         ; Target = target_csharp
+        ; Target = target_ocaml
         ),
         globals.set_option(num_ptag_bits, int(0), !Globals),
 
@@ -1438,6 +1443,11 @@ handle_implications_of_pregen_target_spf(!Globals, Target,
         ;
             Target = target_java,
             BackendForeignLanguages = ["java"]
+        ;
+            Target = target_ocaml,
+            BackendForeignLanguages = ["ocaml"],
+            globals.set_option(executable_file_extension, string(".exe"),
+                !Globals)
         ),
 
         % In the non-C backends, it may not be possible to cast a value

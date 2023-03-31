@@ -342,6 +342,11 @@ check_stdlib_is_installed(Globals, GradeDirName, !Specs, !IO) :-
             % the standard library DLL.
             Target = target_csharp,
             StdLibCheckFile = StdLibDir / "lib" / GradeDirName / "mer_std.dll"
+        ;
+            Target = target_ocaml,
+            % FIXME FIXME FIXME
+            StdLibCheckFile =
+                StdLibDir / "modules" / GradeDirName / "mer_std.init"
         ),
         io.open_input(StdLibCheckFile, StdLibCheckFileResult, !IO),
         (
@@ -377,6 +382,12 @@ check_library_is_installed(Globals, GradeDirName, LibName, !Specs, !IO) :-
         % NOTE: we don't look up the value of the option init_files here
         % because that may include .init files other than those associated with
         % any libraries.
+        globals.lookup_accumulating_option(Globals, init_file_directories,
+            SearchDirs)
+    ;
+        Target = target_ocaml,
+        % FIXME FIXME FIXME
+        CheckFileName = LibName ++ ".init",
         globals.lookup_accumulating_option(Globals, init_file_directories,
             SearchDirs)
     ;

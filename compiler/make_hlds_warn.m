@@ -899,6 +899,7 @@ warn_suspicious_foreign_code(Lang, BodyCode, Context, !Specs) :-
         ;
             ( Lang = lang_csharp
             ; Lang = lang_java
+            ; Lang = lang_ocaml
             )
         )
     ).
