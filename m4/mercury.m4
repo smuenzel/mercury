@@ -616,6 +616,16 @@ fi
 ])
 
 #-----------------------------------------------------------------------------#
+#
+# OCaml configuration.
+#
+AC_DEFUN([MERCURY_CHECK_OCAML],
+[
+mercury_cv_ocaml="yes"
+AC_MSG_RESULT($mercury_cv_ocaml)
+])
+
+#-----------------------------------------------------------------------------#
 
 # NOTE: updates to this macro may need to be reflected in compiler/globals.m.
 # Generating an executable and running it does not work when cross-compiling.

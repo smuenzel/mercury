@@ -1367,6 +1367,12 @@ AC_SUBST(JAVAC_FLAGS_FOR_HEAP_SIZE_MMAKE)
 AC_SUBST(JAVAC_FLAGS_FOR_HEAP_SIZE_CONFIG)
 
 #-----------------------------------------------------------------------------#
+# OCaml configuration
+#
+
+MERCURY_CHECK_OCAML
+
+#-----------------------------------------------------------------------------#
 
 mercury_check_for_functions () {
     for mercury_cv_func in "$@"
@@ -3486,6 +3492,10 @@ AC_ARG_ENABLE(java-grade,
     AS_HELP_STRING([--disable-java-grade], [do not install the Java grade]),
     [enable_java_grade="$enableval"],[enable_java_grade=yes])
 
+AC_ARG_ENABLE(ocaml-grade,
+    AS_HELP_STRING([--disable-ocaml-grade], [do not install the Ocaml grade]),
+    [enable_ocaml_grade="$enableval"],[enable_ocaml_grade=yes])
+
 AC_ARG_ENABLE(libgrades,
     AS_HELP_STRING([--enable-libgrades=...],
             [install exactly the given versions of the library.
@@ -3519,6 +3529,7 @@ if test "$enable_most_grades" = no; then
     enable_stseg_grades=no
     enable_csharp_grade=no
     enable_java_grade=no
+    enable_ocaml_grade=no
 fi
 
 #-----------------------------------------------------------------------------#
@@ -3735,6 +3746,12 @@ fi
 if test $mercury_cv_java = yes -a "$enable_java_grade" = yes
 then
     LIBGRADES="$LIBGRADES java"
+fi
+
+# Add OCaml back-end grade, if OCaml is installed.
+if test $mercury_cv_ocaml = yes -a "$enable_ocaml_grade" = yes
+then
+    LIBGRADES="$LIBGRADES ocaml"
 fi
 
 # Add `.ssdebug' grades.
