@@ -530,6 +530,7 @@ polymorphism_maybe_construct_second_type_info_cell(Type, TypeCtor,
         ;
             ( Target = target_c
             ; Target = target_csharp
+            ; Target = target_ocaml
             ),
             NeedTypeCtorArity = need_arity_in_second_ti_cell
         )

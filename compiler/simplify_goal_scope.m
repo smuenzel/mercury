@@ -397,6 +397,9 @@ simplify_goal_trace_goal(MaybeCompiletimeExpr, MaybeRuntimeExpr, SubGoal,
                 ;
                     Target = target_csharp,
                     !:EvalAttributes = default_attributes(lang_csharp)
+                ;
+                    Target = target_ocaml,
+                    !:EvalAttributes = default_attributes(lang_ocaml)
                 ),
                 set_may_call_mercury(proc_will_not_call_mercury,
                     !EvalAttributes),
@@ -519,6 +522,14 @@ evaluate_compile_time_condition_comptime(CompTime, Info) = Result :-
             Grade = trace_grade_java,
             globals.get_target(Globals, Target),
             ( if Target = target_java then
+                Result = yes
+            else
+                Result = no
+            )
+        ;
+            Grade = trace_grade_ocaml,
+            globals.get_target(Globals, Target),
+            ( if Target = target_ocaml then
                 Result = yes
             else
                 Result = no

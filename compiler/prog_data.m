@@ -1892,7 +1892,8 @@ best_purity(purity_impure, purity_impure) = purity_impure.
     ;       trace_grade_mlds
     ;       trace_grade_c
     ;       trace_grade_csharp
-    ;       trace_grade_java.
+    ;       trace_grade_java
+    ;       trace_grade_ocaml.
 
 :- type trace_trace_level
     --->    trace_level_shallow
