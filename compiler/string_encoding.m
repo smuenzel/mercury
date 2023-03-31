@@ -42,7 +42,9 @@ target_char_range(_Target, Min, Max) :-
 
 target_string_encoding(Target) = Encoding :-
     (
-        Target = target_c,
+        ( Target = target_c
+        ; Target = target_ocaml
+        ),
         Encoding = utf8
     ;
         ( Target = target_java
