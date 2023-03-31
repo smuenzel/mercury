@@ -34,6 +34,9 @@
             java|Java)
                 target=java
                 ;;
+            ocaml|OCaml|Ocaml)
+                target=ocaml
+                ;;
             *)
                 echo "$0: invalid target \`$1'" 1>&2
                 exit 1
@@ -47,6 +50,10 @@
 
     --java|--Java|--java-only|--Java-only)
         target=java
+        ;;
+
+    --ocaml|--Ocaml|--OCaml|--ocaml-only|--Ocaml-only|--OCaml-only)
+        target=ocaml
         ;;
 
     --high-level-code|-H)
@@ -310,6 +317,13 @@
                     ;;
                 java)
                     target=java
+                    asm_labels=false
+                    non_local_gotos=false
+                    global_regs=false
+                    highlevel_code=true
+                    ;;
+                ocaml)
+                    target=ocaml
                     asm_labels=false
                     non_local_gotos=false
                     global_regs=false

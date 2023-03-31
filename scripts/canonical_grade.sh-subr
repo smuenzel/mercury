@@ -39,6 +39,9 @@ case ${highlevel_code},${target} in
             java)
                 GRADE="java"
                 ;;
+            ocaml)
+                GRADE="ocaml"
+                ;;
             *)
                 progname=`basename $0`
                 echo "${progname}: unknown target: ${target}"
