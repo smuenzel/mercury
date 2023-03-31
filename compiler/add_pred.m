@@ -592,7 +592,9 @@ add_builtin(ModuleInfo, CompilationTarget, PredId, HeadTypes0, !PredInfo) :-
                 ),
                 SupportsStore = no
             ;
-                CompilationTarget = target_c,
+                ( CompilationTarget = target_c
+                ; CompilationTarget = target_ocaml
+                ),
                 SupportsStore = yes
             ),
             SupportsStore = no

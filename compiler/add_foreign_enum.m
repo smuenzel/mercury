@@ -265,6 +265,7 @@ add_pragma_foreign_enum(ModuleInfo, ImsItem, !TypeCtorForeignEnumMap,
 target_lang_to_foreign_enum_lang(target_c) = lang_c.
 target_lang_to_foreign_enum_lang(target_csharp) = lang_csharp.
 target_lang_to_foreign_enum_lang(target_java) = lang_java.
+target_lang_to_foreign_enum_lang(target_ocaml) = lang_ocaml.
 
 :- pred map_cons_id_to_foreign_tag(type_ctor::in, module_name::in,
     foreign_language::in,
@@ -392,6 +393,9 @@ build_export_enum_name_map(ContextPieces, Context, Lang, Prefix, MakeUpperCase,
         ;
             Lang = lang_java,
             LangName = "Java"
+        ;
+            Lang = lang_ocaml,
+            LangName = "OCaml"
         ;
             Lang = lang_csharp,
             % XXX The code of add_ctor_to_name_map is OK

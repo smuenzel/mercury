@@ -199,7 +199,8 @@ decide_type_repns(!ModuleInfo, !Specs, !IO) :-
 :- type repn_target
     --->    repn_target_c(c_repn_target)
     ;       repn_target_java
-    ;       repn_target_csharp.
+    ;       repn_target_csharp
+    ;       repn_target_ocaml.
 
 :- type c_repn_target
     --->    c_repn_target(word_size, c_repn_spf, c_repn_allow_direct_arg).
@@ -240,6 +241,9 @@ decide_type_repns_new(Globals, ModuleName, TypeRepnDec, !TypeCtorsTypeDefns,
     ;
         Target = target_csharp,
         RepnTarget = repn_target_csharp
+    ;
+        Target = target_ocaml,
+        RepnTarget = repn_target_ocaml
     ),
     TypeRepnDec = type_repn_decision_data(TypeRepns,
         _DirectArgMap, _ForeignEnums, _ForeignExportEnums),
@@ -790,6 +794,7 @@ check_and_record_du_only_functor(RepnTarget, TypeCtor, Context,
             (
                 ( RepnTarget = repn_target_java
                 ; RepnTarget = repn_target_csharp
+                ; RepnTarget = repn_target_ocaml
                 ),
                 CtorTag = remote_args_tag(remote_args_only_functor),
                 maybe_exist_constraints_num_extra_words(MaybeExistConstraints,
@@ -871,6 +876,7 @@ check_and_record_du_more_functors(RepnTarget, TypeCtor, Context,
             (
                 ( RepnTarget = repn_target_java
                 ; RepnTarget = repn_target_csharp
+                ; RepnTarget = repn_target_ocaml
                 ),
                 record_high_level_data_ctors(Ctors, CtorRepns),
                 MaybeDirectArgFunctors = maybe.no
@@ -1415,22 +1421,26 @@ gen_du_functor_repn_name_arity(GenDuFunctorRepn) = Str :-
 
 %---------------------------------------------------------------------------%
 
-:- pred foreign_target_specific_repn(repn_target::in, c_java_csharp(T)::in,
+:- pred foreign_target_specific_repn(repn_target::in, c_java_csharp_ocaml(T)::in,
     foreign_language::out, T::out) is det.
 
 foreign_target_specific_repn(RepnTarget, CJCs, Lang, Repn) :-
     (
         RepnTarget = repn_target_c(_CRepnTarget),
         Lang = lang_c,
-        CJCs = c_java_csharp(Repn, _, _)
+        CJCs = c_java_csharp_ocaml(Repn, _, _, _)
     ;
         RepnTarget = repn_target_java,
         Lang = lang_java,
-        CJCs = c_java_csharp(_, Repn, _)
+        CJCs = c_java_csharp_ocaml(_, Repn, _, _)
     ;
         RepnTarget = repn_target_csharp,
         Lang = lang_csharp,
-        CJCs = c_java_csharp(_, _, Repn)
+        CJCs = c_java_csharp_ocaml(_, _, Repn, _)
+    ;
+        RepnTarget = repn_target_ocaml,
+        Lang = lang_ocaml,
+        CJCs = c_java_csharp_ocaml(_, _, _, Repn)
     ).
 
 :- pred record_foreign_type_for_target(repn_target::in,
@@ -1444,19 +1454,25 @@ record_foreign_type_for_target(RepnTarget, TypeName, MaybeCanon, Assertions,
         CType = c_type(TypeName),
         TypeDetailsForeign =
             type_details_foreign(CType, MaybeCanon, Assertions),
-        ForeignTypeBody = foreign_type_body(yes(TypeDetailsForeign), no, no)
+        ForeignTypeBody = foreign_type_body(yes(TypeDetailsForeign), no, no, no)
     ;
         RepnTarget = repn_target_java,
         JavaType = java_type(TypeName),
         TypeDetailsForeign =
             type_details_foreign(JavaType, MaybeCanon, Assertions),
-        ForeignTypeBody = foreign_type_body(no, yes(TypeDetailsForeign), no)
+        ForeignTypeBody = foreign_type_body(no, yes(TypeDetailsForeign), no, no)
     ;
         RepnTarget = repn_target_csharp,
         CsharpType = csharp_type(TypeName),
         TypeDetailsForeign =
             type_details_foreign(CsharpType, MaybeCanon, Assertions),
-        ForeignTypeBody = foreign_type_body(no, no, yes(TypeDetailsForeign))
+        ForeignTypeBody = foreign_type_body(no, no, yes(TypeDetailsForeign), no)
+    ;
+        RepnTarget = repn_target_ocaml,
+        OcamlType = ocaml_type(TypeName),
+        TypeDetailsForeign =
+            type_details_foreign(OcamlType, MaybeCanon, Assertions),
+        ForeignTypeBody = foreign_type_body(no, no, no, yes(TypeDetailsForeign))
     ).
 
 :- pred c_target_specific_repn(c_repn_target::in, c_repns(T)::in, T::out)
@@ -2850,6 +2866,7 @@ decide_complex_du_ctor_remote_args(ModuleInfo, Params, ComponentTypeMap,
 target_uses_constructors(target_c) = no.
 target_uses_constructors(target_csharp) = yes.
 target_uses_constructors(target_java) = yes.
+target_uses_constructors(target_ocaml) = yes.
 % NOTE The information here is repeated in ml_target_uses_constructors in
 % ml_type_gen.m; any changes here will require corresponding changes there.
 
@@ -5105,6 +5122,7 @@ setup_decide_du_params(Globals, ModuleName, DirectArgMap, Params) :-
     ;
         ( Target = target_csharp
         ; Target = target_java
+        ; Target = target_ocaml
         ),
         % Direct arg functors have not (yet) been implemented on these targets.
         MaybeDirectArgs = direct_args_disabled,
@@ -5160,6 +5178,7 @@ compute_maybe_primary_tag_bits(Globals, MaybePrimaryTags) :-
     ;
         ( Target = target_java
         ; Target = target_csharp
+        ; Target = target_ocaml
         ),
         MaybePrimaryTags = no_primary_tags
     ).
