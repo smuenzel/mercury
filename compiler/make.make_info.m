@@ -219,6 +219,7 @@
     ;       module_target_csharp_code
     ;       module_target_java_code
     ;       module_target_java_class_code
+    ;       module_target_ocaml_code
     ;       module_target_object_code(pic)
     ;       module_target_foreign_object(pic, foreign_language)
     ;       module_target_fact_table_object(pic, file_name)

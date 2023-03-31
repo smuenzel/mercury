@@ -224,6 +224,7 @@ find_target_dependencies_of_modules(KeepGoing, Globals, TargetType,
         ( TargetType = module_target_c_code
         ; TargetType = module_target_c_header(_)
         ; TargetType = module_target_csharp_code
+        ; TargetType = module_target_ocaml_code
         ; TargetType = module_target_java_code
         ; TargetType = module_target_errors
         ),

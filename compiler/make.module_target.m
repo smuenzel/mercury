@@ -941,6 +941,10 @@ compilation_task(Target) = Result :-
         Target = module_target_java_class_code,
         Result = task_and_options(target_code_to_object_code(non_pic), [])
     ;
+        Target = module_target_ocaml_code,
+        Result = task_and_options(process_module(task_compile_to_target_code),
+            ["--ocaml-only"])
+    ;
         Target = module_target_object_code(PIC),
         Result = task_and_options(target_code_to_object_code(PIC), [])
     ;
@@ -1184,6 +1188,7 @@ target_type_to_pic(TargetType) = Result :-
         ; TargetType = module_target_csharp_code
         ; TargetType = module_target_java_code
         ; TargetType = module_target_java_class_code
+        ; TargetType = module_target_ocaml_code
         ; TargetType = module_target_foreign_object(_, _)
         ; TargetType = module_target_fact_table_object(_, _)
         ; TargetType = module_target_xml_doc

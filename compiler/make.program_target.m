@@ -225,6 +225,10 @@ make_linked_target_2(Globals, LinkedTargetFile, Succeeded, !Info, !IO) :-
             CompilationTarget = target_java,
             IntermediateTargetType = module_target_java_code,
             ObjectTargetType = module_target_java_class_code
+        ;
+            CompilationTarget = target_ocaml,
+            IntermediateTargetType = module_target_ocaml_code,
+            ObjectTargetType = module_target_object_code(PIC)
         ),
 
         AllModulesList = set.to_sorted_list(AllModules),
@@ -450,6 +454,7 @@ get_foreign_object_targets(Globals, PIC, ModuleName, ObjectTargets,
     ;
         ( CompilationTarget = target_java
         ; CompilationTarget = target_csharp
+        ; CompilationTarget = target_ocaml
         ),
         ObjectTargets = []
     ).
@@ -627,7 +632,9 @@ build_linked_target_2(Globals, MainModuleName, FileType, OutputFileName,
         ForeignObjects = list.condense(ForeignObjectFileLists),
 
         (
-            CompilationTarget = target_c,
+            ( CompilationTarget = target_c
+            ; CompilationTarget = target_ocaml
+            ),
             pic_object_file_extension(NoLinkObjsGlobals, PIC, ObjOtherExtToUse)
         ;
             CompilationTarget = target_csharp,
@@ -651,6 +658,7 @@ build_linked_target_2(Globals, MainModuleName, FileType, OutputFileName,
             ( CompilationTarget = target_c
             ; CompilationTarget = target_java
             ; CompilationTarget = target_csharp
+            ; CompilationTarget = target_ocaml
             ),
             % Run the link in a separate process so it can be killed
             % if an interrupt is received.
@@ -1398,6 +1406,10 @@ build_library(MainModuleName, AllModules, Globals, Succeeded,
         Target = target_java,
         build_java_library(Globals, MainModuleName, Succeeded,
             !Info, !Specs, !IO)
+    ;
+        Target = target_ocaml,
+        build_ocaml_library(Globals, MainModuleName, Succeeded,
+            !Info, !Specs, !IO)
     ).
 
 :- pred build_c_library(globals::in, module_name::in, list(module_name)::in,
@@ -1458,6 +1470,15 @@ build_csharp_library(Globals, MainModuleName, Succeeded, !Info, !Specs, !IO) :-
 build_java_library(Globals, MainModuleName, Succeeded, !Info, !Specs, !IO) :-
     make_linked_target(Globals,
         linked_target_file(MainModuleName, java_archive),
+        Succeeded, !Info, !Specs, !IO).
+
+:- pred build_ocaml_library(globals::in, module_name::in,
+    maybe_succeeded::out, make_info::in, make_info::out,
+    list(error_spec)::in, list(error_spec)::out, io::di, io::uo) is det.
+
+build_ocaml_library(Globals, MainModuleName, Succeeded, !Info, !Specs, !IO) :-
+    make_linked_target(Globals,
+        linked_target_file(MainModuleName, static_library),
         Succeeded, !Info, !Specs, !IO).
 
 %---------------------------------------------------------------------------%
@@ -1566,6 +1587,7 @@ install_ints_and_headers(Globals, SubdirLinkSucceeded, ModuleName, Succeeded,
         ;
             ( Target = target_java
             ; Target = target_csharp
+            ; Target = target_ocaml
             ),
             HeaderSucceeded = succeeded
         ),
@@ -2143,6 +2165,7 @@ make_module_clean(Globals, ModuleName, !Info, !IO) :-
         module_target_c_code,
         module_target_c_header(header_mih),
         module_target_csharp_code,
+        module_target_ocaml_code,
         module_target_java_code,
         module_target_java_class_code], !Info, !IO),
 
