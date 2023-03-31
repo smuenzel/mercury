@@ -71,12 +71,12 @@
     module_dep_info::in, file_name::in, file_name::in, maybe_succeeded::out,
     io::di, io::uo) is det.
 
-    % compile_ocaml_files(Globals, ProgressStream, ErrorStream,
-    %   HeadOcamlFile, TailOcamlFiles, Succeeded, !IO)
+    % compile_ocaml_files(Globals, ProgressStream, ErrorStream, PIC,
+    %   OcamlFile, O_File, Succeeded, !IO)
     %
 :- pred compile_ocaml_files(globals::in,
-    io.text_output_stream::in, io.text_output_stream::in,
-    string::in, list(string)::in, maybe_succeeded::out, io::di, io::uo) is det.
+    io.text_output_stream::in, io.text_output_stream::in, pic::in,
+    string::in, string::in, maybe_succeeded::out, io::di, io::uo) is det.
 
     % make_library_init_file(Globals, ProgressStream, ErrorStream,
     %   MainModuleName, ModuleNames, Succeeded, !IO):
@@ -1102,6 +1102,34 @@ referenced_dlls(Module, DepModules0) = Modules :-
             ),
         Modules = set.map(F, DepModules)
     ).
+
+%-----------------------------------------------------------------------------%
+
+compile_ocaml_files(Globals, ProgressStream, ErrorStream,
+        PIC, OcamlFile, O_File, Succeeded, !IO) :-
+    globals.lookup_bool_option(Globals, verbose, Verbose),
+    globals.lookup_string_option(Globals, ocamlc, OcamlC),
+    (
+        Verbose = no
+    ;
+        Verbose = yes,
+        io.format(ProgressStream, "%% Compiling `%s':\n", [s(OcamlFile)], !IO)
+    ),
+    (
+        PIC = pic,
+        PIC_flag = "-fPIC"
+    ;
+        PIC = non_pic,
+        PIC_flag = "-fno-PIC"
+    ),
+    string.append_list([
+        OcamlC, " ", "-c", "-O3", PIC_flag,
+        "-o", quote_shell_cmd_arg(O_File),
+        "-", quote_shell_cmd_arg(OcamlFile)
+        ], Command),
+    invoke_system_command(Globals, ProgressStream, ErrorStream, ErrorStream,
+        cmd_verbose_commands, Command, Succeeded, !IO)
+    .
 
 %-----------------------------------------------------------------------------%
 

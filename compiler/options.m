@@ -978,6 +978,7 @@
     ;       cli_interpreter
 
     % OCaml
+    ;       ocamlc
 
     % Link options
     ;       output_file_name
@@ -1925,6 +1926,7 @@ optdef(oc_target_comp, quoted_csharp_flag,              string_special).
 optdef(oc_target_comp, cli_interpreter,                 string("")).
 
     % OCaml
+optdef(oc_target_comp, ocamlc,                         string("ocamlopt.opt")).
 
     % Link Options.
 
@@ -2994,6 +2996,8 @@ long_option("csharp-compiler",      csharp_compiler).
 long_option("csharp-flags",         csharp_flags).
 long_option("csharp-flag",          quoted_csharp_flag).
 long_option("cli-interpreter",      cli_interpreter).
+
+long_option("ocamlc",               ocamlc).
 
 % link options
 long_option("output-file",          output_file_name).
