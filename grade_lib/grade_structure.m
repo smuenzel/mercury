@@ -176,6 +176,9 @@
             )
     ;       mlds_target_java(
                 grade_var_ssdebug
+            )
+    ;       mlds_target_ocaml(
+                grade_var_ssdebug
             ).
 
 :- type mlds_c_dararep
@@ -556,6 +559,7 @@ grade_vars_to_grade_structure(GradeVars) = GradeStructure :-
             ;
                 ( Target = grade_var_target_csharp
                 ; Target = grade_var_target_java
+                ; Target = grade_var_target_ocaml
                 ),
                 expect(unify(ThreadSafe, grade_var_thread_safe_target_native),
                     $pred,
@@ -593,6 +597,9 @@ grade_vars_to_grade_structure(GradeVars) = GradeStructure :-
                 ;
                     Target = grade_var_target_java,
                     MLDSTarget = mlds_target_java(SSDebug)
+                ;
+                    Target = grade_var_target_ocaml,
+                    MLDSTarget = mlds_target_ocaml(SSDebug)
                 ),
                 GradeStructure = grade_mlds(MLDSTarget, TargetDebug)
             )
