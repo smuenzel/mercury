@@ -719,21 +719,21 @@
     % one of these foreign languages. This can be done in instances
     % of this type, whose fields always contain the info for C, Java and C#
     % (in that order).
-:- type c_java_csharp_ocaml(T)
-    --->    c_java_csharp_ocaml(T, T, T, T).
+:- type c_java_csharp_ocaml_ocaml(T)
+    --->    c_java_csharp_ocaml_ocaml(T, T, T, T).
 
 :- type c_j_cs_ml_defns ==
-    c_java_csharp_ocaml(list(item_type_defn_info_foreign)).
+    c_java_csharp_ocaml_ocaml(list(item_type_defn_info_foreign)).
 :- type c_j_cs_ml_maybe_defn ==
-    c_java_csharp_ocaml(maybe(item_type_defn_info_foreign)).
+    c_java_csharp_ocaml_ocaml(maybe(item_type_defn_info_foreign)).
 :- type c_j_cs_ml_enums ==
-    c_java_csharp_ocaml(list(item_foreign_enum_info)).
+    c_java_csharp_ocaml_ocaml(list(item_foreign_enum_info)).
 :- type c_j_cs_ml_maybe_enum ==
-    c_java_csharp_ocaml(maybe(item_foreign_enum_info)).
+    c_java_csharp_ocaml_ocaml(maybe(item_foreign_enum_info)).
 :- type c_j_cs_ml_repn ==
-    c_java_csharp_ocaml(maybe(foreign_type_repn)).
+    c_java_csharp_ocaml_ocaml(maybe(foreign_type_repn)).
 :- type c_j_cs_ml_enum_repn ==
-    c_java_csharp_ocaml(maybe(enum_foreign_repn)).
+    c_java_csharp_ocaml_ocaml(maybe(enum_foreign_repn)).
 
 :- type inst_ctor_defn_map == map(inst_ctor, inst_ctor_all_defns).
 :- type inst_ctor_all_defns
@@ -1924,7 +1924,7 @@
 %---------------------%
 
 :- type c_j_cs_ml_maybe_defn_or_enum ==
-    c_java_csharp_ocaml(maybe(foreign_type_or_enum)).
+    c_java_csharp_ocaml_ocaml(maybe(foreign_type_or_enum)).
 
 :- type foreign_type_or_enum
     --->    foreign_type_or_enum_type(item_type_defn_info_foreign)

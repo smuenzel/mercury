@@ -331,12 +331,12 @@ decide_simple_type_repns_stage_1(TypeCtor, CheckedDefn,
 %---------------------%
 
 :- pred maybe_mark_type_ctor_as_word_aligned_for_c(type_ctor::in,
-    c_j_cs_maybe_defn::in,
+    c_j_cs_ml_maybe_defn::in,
     word_aligned_type_ctors_c::in, word_aligned_type_ctors_c::out) is det.
 
 maybe_mark_type_ctor_as_word_aligned_for_c(TypeCtor, MaybeDefnCJCs,
         !WordAlignedTypeCtorsC) :-
-    MaybeDefnCJCs = c_java_csharp(MaybeDefnC, _, _),
+    MaybeDefnCJCs = c_java_csharp_ocaml(MaybeDefnC, _, _),
     ( if
         MaybeDefnC = yes(DefnC),
         DefnC ^ td_ctor_defn ^ foreign_assertions =
@@ -352,7 +352,7 @@ maybe_mark_type_ctor_as_word_aligned_for_c(TypeCtor, MaybeDefnCJCs,
 
 :- pred decide_type_repns_stage_1_du_all_plain_constants(type_ctor::in,
     item_type_defn_info_du::in, string::in, list(string)::in,
-    c_j_cs_maybe_defn_or_enum::in,
+    c_j_cs_ml_maybe_defn_or_enum::in,
     simple_du_map::in, simple_du_map::out) is det.
 
 decide_type_repns_stage_1_du_all_plain_constants(TypeCtor, DuDefn,
@@ -377,7 +377,7 @@ decide_type_repns_stage_1_du_all_plain_constants(TypeCtor, DuDefn,
     map.det_insert(TypeCtor, SimpleDuRepn, !SimpleDuMap).
 
 :- pred decide_type_repns_stage_1_du_not_all_plain_constants(type_ctor::in,
-    item_type_defn_info_du::in, c_j_cs_maybe_defn::in,
+    item_type_defn_info_du::in, c_j_cs_ml_maybe_defn::in,
     simple_du_map::in, simple_du_map::out,
     word_aligned_type_ctors_c::in, word_aligned_type_ctors_c::out) is det.
 
@@ -431,11 +431,11 @@ decide_type_repns_stage_1_du_not_all_plain_constants(TypeCtor, DuDefn,
 %---------------------------------------------------------------------------%
 
 :- pred decide_type_repns_foreign_defns_or_enums(
-    c_j_cs_maybe_defn_or_enum::in, c_j_cs_enum_repn::out) is det.
+    c_j_cs_ml_maybe_defn_or_enum::in, c_j_cs_enum_repn::out) is det.
 
 decide_type_repns_foreign_defns_or_enums(MaybeDefnOrEnumCJCs,
         MaybeRepnCJCs) :-
-    MaybeDefnOrEnumCJCs = c_java_csharp(MaybeDefnOrEnumC,
+    MaybeDefnOrEnumCJCs = c_java_csharp_ocaml(MaybeDefnOrEnumC,
         MaybeDefnOrEnumJava, MaybeDefnOrEnumCsharp),
     represent_maybe_foreign_defn_or_enum(MaybeDefnOrEnumC,
         MaybeRepnC),
@@ -443,7 +443,7 @@ decide_type_repns_foreign_defns_or_enums(MaybeDefnOrEnumCJCs,
         MaybeRepnJava),
     represent_maybe_foreign_defn_or_enum(MaybeDefnOrEnumCsharp,
         MaybeRepnCsharp),
-    MaybeRepnCJCs = c_java_csharp(MaybeRepnC, MaybeRepnJava,
+    MaybeRepnCJCs = c_java_csharp_ocaml(MaybeRepnC, MaybeRepnJava,
         MaybeRepnCsharp).
 
 :- pred represent_maybe_foreign_defn_or_enum(maybe(foreign_type_or_enum)::in,
@@ -470,16 +470,16 @@ represent_maybe_foreign_defn_or_enum(MaybeForeignDefnOrEnum,
 
 %---------------------%
 
-:- pred decide_type_repns_foreign_defns(c_j_cs_maybe_defn::in,
+:- pred decide_type_repns_foreign_defns(c_j_cs_ml_maybe_defn::in,
     c_j_cs_repn::out) is det.
 
 decide_type_repns_foreign_defns(MaybeDefnCJCs, MaybeRepnCJCs) :-
-    MaybeDefnCJCs = c_java_csharp(MaybeDefnC, MaybeDefnJava,
+    MaybeDefnCJCs = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJava,
         MaybeDefnCsharp),
     represent_maybe_foreign_defn(MaybeDefnC, MaybeRepnC),
     represent_maybe_foreign_defn(MaybeDefnJava, MaybeRepnJava),
     represent_maybe_foreign_defn(MaybeDefnCsharp, MaybeRepnCsharp),
-    MaybeRepnCJCs = c_java_csharp(MaybeRepnC, MaybeRepnJava,
+    MaybeRepnCJCs = c_java_csharp_ocaml(MaybeRepnC, MaybeRepnJava,
         MaybeRepnCsharp).
 
 :- pred represent_maybe_foreign_defn(maybe(item_type_defn_info_foreign)::in,
@@ -817,7 +817,7 @@ decide_all_type_repns_stage_2(BaseParams, EqvRepnMap, EqvMap, SubtypeMap,
 
 :- pred decide_type_repns_stage_2_du_gen(base_params::in, type_eqv_map::in,
     subtype_repn_map::in, set_tree234(type_ctor)::in, simple_du_map::in,
-    type_ctor::in, item_type_defn_info_du::in, c_j_cs_maybe_defn::in,
+    type_ctor::in, item_type_defn_info_du::in, c_j_cs_ml_maybe_defn::in,
     type_ctor_repn_map::in, type_ctor_repn_map::out,
     list(error_spec)::in, list(error_spec)::out) is det.
 
@@ -2371,7 +2371,7 @@ expand_eqv_sub_of_notag_type_fixpoint(TypeEqvMap, SubtypeMap, SimpleDuMap,
         % language definition for C?
         NotagRepn = notag_repn(_NotagFunctorName, NotagFunctorArgType0,
             MaybeCJCsRepn),
-        MaybeCJCsRepn = c_java_csharp(no, _, _)
+        MaybeCJCsRepn = c_java_csharp_ocaml(no, _, _)
     then
         varset.merge_renaming(TVarSet0, NotagTVarSet0, TVarSet1,
             RenamingNotagTo1),

@@ -656,7 +656,7 @@ output_to_be_quoted_char_csharp(Stream, Char, !IO) :-
 quote_one_char_acc_c(Char, RevChars0, RevChars) :-
     ( if escape_special_char_c(Char, RevChars0, RevChars1) then
         RevChars = RevChars1
-    else if is_source_char_c_java_csharp(Char) then
+    else if is_source_char_c_java_csharp_ocaml(Char) then
         RevChars = [Char | RevChars0]
     else
         char.to_int(Char, CharInt),
@@ -682,7 +682,7 @@ quote_one_char_acc_c(Char, RevChars0, RevChars) :-
 quote_one_char_acc_java(Char, RevChars0, RevChars) :-
     ( if escape_special_char_java(Char, RevChars0, RevChars1) then
         RevChars = RevChars1
-    else if is_source_char_c_java_csharp(Char) then
+    else if is_source_char_c_java_csharp_ocaml(Char) then
         RevChars = [Char | RevChars0]
     else
         char.to_int(Char, CharInt),
@@ -702,7 +702,7 @@ quote_one_char_acc_java(Char, RevChars0, RevChars) :-
 quote_one_char_acc_csharp(Char, RevChars0, RevChars) :-
     ( if escape_special_char_csharp(Char, RevChars0, RevChars1) then
         RevChars = RevChars1
-    else if is_source_char_c_java_csharp(Char) then
+    else if is_source_char_c_java_csharp_ocaml(Char) then
         RevChars = [Char | RevChars0]
     else
         char.to_int(Char, CharInt),
@@ -778,9 +778,9 @@ escape_special_char_csharp(Char, RevChars0, RevChars) :-
     % XXX Do they actually have the same rules with respect to graphic
     % characters?
     %
-:- pred is_source_char_c_java_csharp(char::in) is semidet.
+:- pred is_source_char_c_java_csharp_ocaml(char::in) is semidet.
 
-is_source_char_c_java_csharp(Char) :-
+is_source_char_c_java_csharp_ocaml(Char) :-
     ( char.is_alnum(Char)
     ; string.contains_char(c_graphic_chars, Char)
     ).

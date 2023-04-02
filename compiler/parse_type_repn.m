@@ -1757,7 +1757,7 @@ parse_c_j_cs_repn_or_enum(DescPieces, VarSet, Term, MaybeCJCsRepnOrEnum) :-
             AtomStr = "no_c_j_cs",
             (
                 ArgTerms = [],
-                CJCsRepnOrEnum = c_java_csharp(no, no, no),
+                CJCsRepnOrEnum = c_java_csharp_ocaml(no, no, no),
                 MaybeCJCsRepnOrEnum = ok1(CJCsRepnOrEnum)
             ;
                 ArgTerms = [_ | _],
@@ -1783,7 +1783,7 @@ parse_c_j_cs_repn_or_enum(DescPieces, VarSet, Term, MaybeCJCsRepnOrEnum) :-
                     MaybeMaybeRepnOrEnumJava = ok1(MaybeRepnOrEnumJava),
                     MaybeMaybeRepnOrEnumCsharp = ok1(MaybeRepnOrEnumCsharp)
                 then
-                    CJCsRepnOrEnum = c_java_csharp(MaybeRepnOrEnumC,
+                    CJCsRepnOrEnum = c_java_csharp_ocaml(MaybeRepnOrEnumC,
                         MaybeRepnOrEnumJava, MaybeRepnOrEnumCsharp),
                     MaybeCJCsRepnOrEnum = ok1(CJCsRepnOrEnum)
                 else
@@ -1832,7 +1832,7 @@ parse_c_j_cs_repn(DescPieces, VarSet, Term, MaybeCJCsRepn) :-
             AtomStr = "no_c_j_cs",
             (
                 ArgTerms = [],
-                CJCsRepn = c_java_csharp(no, no, no),
+                CJCsRepn = c_java_csharp_ocaml(no, no, no),
                 MaybeCJCsRepn = ok1(CJCsRepn)
             ;
                 ArgTerms = [_ | _],
@@ -1858,7 +1858,7 @@ parse_c_j_cs_repn(DescPieces, VarSet, Term, MaybeCJCsRepn) :-
                     MaybeMaybeRepnJava = ok1(MaybeRepnJava),
                     MaybeMaybeRepnCsharp = ok1(MaybeRepnCsharp)
                 then
-                    CJCsRepn = c_java_csharp(MaybeRepnC, MaybeRepnJava,
+                    CJCsRepn = c_java_csharp_ocaml(MaybeRepnC, MaybeRepnJava,
                         MaybeRepnCsharp),
                     MaybeCJCsRepn = ok1(CJCsRepn)
                 else

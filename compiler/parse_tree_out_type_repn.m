@@ -711,7 +711,7 @@ fill_kind_size_to_string(FillKindSize) = Str :-
 
 mercury_output_c_j_cs_repn_or_enum(Stream, TypeRepnFor, Indent,
         MaybeCJCsRepnOrEnum, !IO) :-
-    MaybeCJCsRepnOrEnum = c_java_csharp(MaybeRepnOrEnumC, MaybeRepnOrEnumJava,
+    MaybeCJCsRepnOrEnum = c_java_csharp_ocaml(MaybeRepnOrEnumC, MaybeRepnOrEnumJava,
         MaybeRepnOrEnumCsharp),
     Indent1 = Indent + 1,
     I = indent(Indent),
@@ -759,7 +759,7 @@ mercury_output_c_j_cs_repn_or_enum(Stream, TypeRepnFor, Indent,
     type_repn_for::in, int::in, c_j_cs_repn::in, io::di, io::uo) is det.
 
 mercury_output_c_j_cs_repn(Stream, TypeRepnFor, Indent, MaybeCJCsRepn, !IO) :-
-    MaybeCJCsRepn = c_java_csharp(MaybeRepnC, MaybeRepnJava, MaybeRepnCsharp),
+    MaybeCJCsRepn = c_java_csharp_ocaml(MaybeRepnC, MaybeRepnJava, MaybeRepnCsharp),
     ( if
         MaybeRepnC = no,
         MaybeRepnJava = no,

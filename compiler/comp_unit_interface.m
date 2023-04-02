@@ -255,7 +255,7 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
                 % or to known size ints/uints?
                 DetailsAbstract = abstract_type_general,
                 AbsDefn = EqvDefn0 ^ td_ctor_defn := DetailsAbstract,
-                CSCsMaybeDefn = c_java_csharp(no, no, no),
+                CSCsMaybeDefn = c_java_csharp_ocaml(no, no, no),
                 StdDefn = std_mer_type_abstract(AbsStatus, AbsDefn,
                     CSCsMaybeDefn),
                 IntDefn = wrap_abstract_type_defn(AbsDefn),
@@ -275,7 +275,7 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
                 DetailsSub = SubDefn0 ^ td_ctor_defn,
                 make_sub_type_abstract(DetailsSub, DetailsAbstract),
                 AbsDefn = SubDefn0 ^ td_ctor_defn := DetailsAbstract,
-                CJCsMaybeDefn = c_java_csharp(no, no, no),
+                CJCsMaybeDefn = c_java_csharp_ocaml(no, no, no),
                 StdDefn = std_mer_type_abstract(AbsStatus, AbsDefn,
                     CJCsMaybeDefn),
                 IntDefn = wrap_abstract_type_defn(AbsDefn),
@@ -289,7 +289,7 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
             (
                 StdDefn0 = std_mer_type_du_all_plain_constants(DuStatus,
                     DuDefn0, _HeadCtor, _TailCtors, CJCsMaybeDefnOrEnum),
-                CJCsMaybeDefnOrEnum = c_java_csharp(MaybeDefnOrEnumC,
+                CJCsMaybeDefnOrEnum = c_java_csharp_ocaml(MaybeDefnOrEnumC,
                     MaybeDefnOrEnumJava, MaybeDefnOrEnumCsharp),
                 GetForeignTypeOnly =
                     ( pred(MaybeDorE::in, MaybeFT::out) is det :-
@@ -310,7 +310,7 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
                 GetForeignTypeOnly(MaybeDefnOrEnumC, MaybeDefnC0),
                 GetForeignTypeOnly(MaybeDefnOrEnumJava, MaybeDefnJava0),
                 GetForeignTypeOnly(MaybeDefnOrEnumCsharp, MaybeDefnCsharp0),
-                CJCsMaybeDefn0 = c_java_csharp(MaybeDefnC0, MaybeDefnJava0,
+                CJCsMaybeDefn0 = c_java_csharp_ocaml(MaybeDefnC0, MaybeDefnJava0,
                     MaybeDefnCsharp0)
             ;
                 StdDefn0 = std_mer_type_du_not_all_plain_constants(DuStatus,
@@ -327,13 +327,13 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
                     AbsStatus = std_abs_type_ft_exported,
                     make_du_type_abstract(DetailsDu, DetailsAbstract),
                     CJCsMaybeDefn = CJCsMaybeDefn0,
-                    get_c_j_cs_defns(CJCsMaybeDefn, CJCsDefns),
+                    get_c_j_cs_ml_defns(CJCsMaybeDefn, CJCsDefns),
                     IntCJCsDefns = list.map(wrap_foreign_type_defn, CJCsDefns)
                 ;
                     DuStatus = std_du_type_mer_exported,
                     AbsStatus = std_abs_type_abstract_exported,
                     make_du_type_abstract(DetailsDu, DetailsAbstract),
-                    CJCsMaybeDefn = c_java_csharp(no, no, no),
+                    CJCsMaybeDefn = c_java_csharp_ocaml(no, no, no),
                     IntCJCsDefns = []
                 ;
                     DuStatus = std_du_type_abstract_exported,
@@ -347,7 +347,7 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
                     % a "where type_is_abstract_enum(N)" clause in the type
                     % declaration.
                     DetailsAbstract = abstract_type_general,
-                    CJCsMaybeDefn = c_java_csharp(no, no, no),
+                    CJCsMaybeDefn = c_java_csharp_ocaml(no, no, no),
                     IntCJCsDefns = []
                 ),
                 AbsDefn = DuDefn0 ^ td_ctor_defn := DetailsAbstract,
@@ -369,9 +369,9 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
                     CJCsMaybeDefn = CJCsMaybeDefn0
                 ;
                     AbsStatus = std_abs_type_abstract_exported,
-                    CJCsMaybeDefn = c_java_csharp(no, no, no)
+                    CJCsMaybeDefn = c_java_csharp_ocaml(no, no, no)
                 ),
-                get_c_j_cs_defns(CJCsMaybeDefn, CJCsDefns),
+                get_c_j_cs_ml_defns(CJCsMaybeDefn, CJCsDefns),
                 IntCJCsDefns = list.map(wrap_foreign_type_defn, CJCsDefns),
                 StdDefn = std_mer_type_abstract(AbsStatus, AbsDefn,
                     CJCsMaybeDefn),
@@ -385,11 +385,11 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
         )
     ).
 
-:- pred get_c_j_cs_defns(c_j_cs_maybe_defn::in,
+:- pred get_c_j_cs_ml_defns(c_j_cs_ml_maybe_defn::in,
     list(item_type_defn_info_foreign)::out) is det.
 
-get_c_j_cs_defns(CJCsMaybeDefn, CJCsDefns) :-
-    CJCsMaybeDefn = c_java_csharp(MaybeDefnC, MaybeDefnJava, MaybeDefnCsharp),
+get_c_j_cs_ml_defns(CJCsMaybeDefn, CJCsDefns) :-
+    CJCsMaybeDefn = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJava, MaybeDefnCsharp),
     MaybeToList =
         ( pred(MaybeDefn::in, Defns::out) is det :-
             (
@@ -634,7 +634,7 @@ pre_grab_pre_qual_type_ctor_checked_defn(CheckedDefn0, CheckedDefn) :-
                 SrcDefns = SrcDefns0
             ;
                 Status = std_du_type_mer_exported,
-                delete_uc_preds_from_c_j_cs_maybe_defn_or_enum(
+                delete_uc_preds_from_c_j_cs_ml_maybe_defn_or_enum(
                     MaybeCJCsDefnOrEnum0, MaybeCJCsDefnOrEnum),
                 StdDefn = std_mer_type_du_all_plain_constants(Status,
                     DuDefn0, HeadCtor, TailCtors, MaybeCJCsDefnOrEnum),
@@ -647,7 +647,7 @@ pre_grab_pre_qual_type_ctor_checked_defn(CheckedDefn0, CheckedDefn) :-
                 ; Status = std_du_type_all_private
                 ),
                 delete_uc_preds_from_du_type_defn(DuDefn0, DuDefn),
-                delete_uc_preds_from_c_j_cs_maybe_defn_or_enum(
+                delete_uc_preds_from_c_j_cs_ml_maybe_defn_or_enum(
                     MaybeCJCsDefnOrEnum0, MaybeCJCsDefnOrEnum),
                 StdDefn = std_mer_type_du_all_plain_constants(Status,
                     DuDefn, HeadCtor, TailCtors, MaybeCJCsDefnOrEnum),
@@ -667,7 +667,7 @@ pre_grab_pre_qual_type_ctor_checked_defn(CheckedDefn0, CheckedDefn) :-
                 SrcDefns = SrcDefns0
             ;
                 Status = std_du_type_mer_exported,
-                delete_uc_preds_from_c_j_cs_maybe_defn(MaybeCJCsDefn0,
+                delete_uc_preds_from_c_j_cs_ml_maybe_defn(MaybeCJCsDefn0,
                     MaybeCJCsDefn),
                 StdDefn = std_mer_type_du_not_all_plain_constants(Status,
                     DuDefn0, MaybeCJCsDefn),
@@ -680,7 +680,7 @@ pre_grab_pre_qual_type_ctor_checked_defn(CheckedDefn0, CheckedDefn) :-
                 ; Status = std_du_type_all_private
                 ),
                 delete_uc_preds_from_du_type_defn(DuDefn0, DuDefn),
-                delete_uc_preds_from_c_j_cs_maybe_defn(MaybeCJCsDefn0,
+                delete_uc_preds_from_c_j_cs_ml_maybe_defn(MaybeCJCsDefn0,
                     MaybeCJCsDefn),
                 StdDefn = std_mer_type_du_not_all_plain_constants(Status,
                     DuDefn, MaybeCJCsDefn),
@@ -701,7 +701,7 @@ pre_grab_pre_qual_type_ctor_checked_defn(CheckedDefn0, CheckedDefn) :-
                 ( Status = std_abs_type_abstract_exported
                 ; Status = std_abs_type_all_private
                 ),
-                delete_uc_preds_from_c_j_cs_maybe_defn(MaybeCJCsDefn0,
+                delete_uc_preds_from_c_j_cs_ml_maybe_defn(MaybeCJCsDefn0,
                     MaybeCJCsDefn),
                 StdDefn = std_mer_type_abstract(Status, AbsDefn,
                     MaybeCJCsDefn),
@@ -1764,7 +1764,7 @@ hide_type_ctor_checked_defn_std_imp_details_for_int1(BothTypesMap,
                 AbstractStatus = std_abs_type_abstract_exported,
                 AbstractDefn = EqvDefn ^ td_ctor_defn
                     := abstract_type_general,
-                MaybeCJCsDefn = c_java_csharp(no, no, no),
+                MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no),
                 StdTypeDefn = std_mer_type_abstract(AbstractStatus,
                     AbstractDefn, MaybeCJCsDefn),
                 SrcDefnsStd = src_defns_std(
@@ -1796,7 +1796,7 @@ hide_type_ctor_checked_defn_std_imp_details_for_int1(BothTypesMap,
                 SrcImpDefns = []
             ),
             AbstractStatus = std_abs_type_abstract_exported,
-            MaybeCJCsDefn = c_java_csharp(no, no, no),
+            MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no),
             StdTypeDefn = std_mer_type_abstract(AbstractStatus,
                 AbstractDefn, MaybeCJCsDefn),
             SrcDefnsStd = src_defns_std(SrcIntDefns0, SrcImpDefns, []),
@@ -1820,7 +1820,7 @@ hide_type_ctor_checked_defn_std_imp_details_for_int1(BothTypesMap,
                 % the StdTypeDefn part.
                 AbstractDefn = make_subtype_defn_abstract(SubDefn),
                 AbstractStatus = std_abs_type_all_private,
-                MaybeCJCsDefn = c_java_csharp(no, no, no),
+                MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no),
                 StdTypeDefn = std_mer_type_abstract(AbstractStatus,
                     AbstractDefn, MaybeCJCsDefn),
                 SrcImpDefns = [wrap_abstract_type_defn(AbstractDefn)],
@@ -1902,7 +1902,7 @@ hide_type_ctor_checked_defn_std_imp_details_for_int1(BothTypesMap,
             % NeededImpTypeCtors.
             delete_any_foreign_enum_from_extras(Extras0, MaybeCJCsDefn1),
             ( if set.member(TypeCtor, NeededImpTypeCtors) then
-                ( if MaybeCJCsDefn1 = c_java_csharp(no, no, no) then
+                ( if MaybeCJCsDefn1 = c_java_csharp_ocaml(no, no, no) then
                     % After deleting any foreign enum items in the
                     % implementation section, this type has only a du Mercury
                     % definition left there. Making it abstract preserves
@@ -2001,7 +2001,7 @@ hide_type_ctor_checked_defn_std_imp_details_for_int1(BothTypesMap,
                     SrcImpDefns = []
                 ),
                 AbstractStatus = std_abs_type_abstract_exported,
-                MaybeCJCsDefn = c_java_csharp(no, no, no),
+                MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no),
                 % XXX Should we use SrcIntDefns?
                 % SrcIntDefns = [wrap_abstract_type_defn(AbstractDefn)],
                 StdTypeDefn = std_mer_type_abstract(AbstractStatus,
@@ -2021,7 +2021,7 @@ hide_type_ctor_checked_defn_std_imp_details_for_int1(BothTypesMap,
             % NeededImpTypeCtors.
             delete_any_foreign_enum_from_extras(Extras0, MaybeCJCsDefn1),
             ( if set.member(TypeCtor, NeededImpTypeCtors) then
-                ( if MaybeCJCsDefn1 = c_java_csharp(no, no, no) then
+                ( if MaybeCJCsDefn1 = c_java_csharp_ocaml(no, no, no) then
                     % This type has only a du Mercury definition in the
                     % implementation section. Making it abstract
                     % preserves old behavior.
@@ -2088,7 +2088,7 @@ hide_type_ctor_checked_defn_std_imp_details_for_int1(BothTypesMap,
                 map.det_insert(TypeCtor, TypeCtorCheckedDefn0,
                     !TypeCtorCheckedMap)
             else
-                MaybeCJCsDefn = c_java_csharp(no, no, no),
+                MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no),
                 StdTypeDefn = std_mer_type_abstract(AbstractStatus,
                     AbstractDefn, MaybeCJCsDefn),
                 SrcDefnsStd = src_defns_std(SrcIntDefns0, [], []),
@@ -2575,12 +2575,12 @@ delete_uc_preds_from_du_type_defn(ItemTypeDefn0, ItemTypeDefn) :-
     delete_uc_preds_from_du_type(DetailsDu0, DetailsDu),
     ItemTypeDefn = ItemTypeDefn0 ^ td_ctor_defn := DetailsDu.
 
-:- pred delete_uc_preds_from_c_j_cs_maybe_defn_or_enum(
-    c_j_cs_maybe_defn_or_enum::in, c_j_cs_maybe_defn_or_enum::out) is det.
+:- pred delete_uc_preds_from_c_j_cs_ml_maybe_defn_or_enum(
+    c_j_cs_ml_maybe_defn_or_enum::in, c_j_cs_ml_maybe_defn_or_enum::out) is det.
 
-delete_uc_preds_from_c_j_cs_maybe_defn_or_enum(CJCsMaybeDefnOrEnum0,
+delete_uc_preds_from_c_j_cs_ml_maybe_defn_or_enum(CJCsMaybeDefnOrEnum0,
         CJCsMaybeDefnOrEnum) :-
-    CJCsMaybeDefnOrEnum0 = c_java_csharp(MaybeDefnOrEnumC0, MaybeDefnOrEnumJ0,
+    CJCsMaybeDefnOrEnum0 = c_java_csharp_ocaml(MaybeDefnOrEnumC0, MaybeDefnOrEnumJ0,
         MaybeDefnOrEnumCs0),
     delete_uc_preds_from_maybe_foreign_type_defn_or_enum(MaybeDefnOrEnumC0,
         MaybeDefnOrEnumC),
@@ -2588,18 +2588,18 @@ delete_uc_preds_from_c_j_cs_maybe_defn_or_enum(CJCsMaybeDefnOrEnum0,
         MaybeDefnOrEnumJ),
     delete_uc_preds_from_maybe_foreign_type_defn_or_enum(MaybeDefnOrEnumCs0,
         MaybeDefnOrEnumCs),
-    CJCsMaybeDefnOrEnum = c_java_csharp(MaybeDefnOrEnumC,
+    CJCsMaybeDefnOrEnum = c_java_csharp_ocaml(MaybeDefnOrEnumC,
         MaybeDefnOrEnumJ, MaybeDefnOrEnumCs).
 
-:- pred delete_uc_preds_from_c_j_cs_maybe_defn(
-    c_j_cs_maybe_defn::in, c_j_cs_maybe_defn::out) is det.
+:- pred delete_uc_preds_from_c_j_cs_ml_maybe_defn(
+    c_j_cs_ml_maybe_defn::in, c_j_cs_ml_maybe_defn::out) is det.
 
-delete_uc_preds_from_c_j_cs_maybe_defn(CJCsMaybeDefn0, CJCsMaybeDefn) :-
-    CJCsMaybeDefn0 = c_java_csharp(MaybeDefnC0, MaybeDefnJ0, MaybeDefnCs0),
+delete_uc_preds_from_c_j_cs_ml_maybe_defn(CJCsMaybeDefn0, CJCsMaybeDefn) :-
+    CJCsMaybeDefn0 = c_java_csharp_ocaml(MaybeDefnC0, MaybeDefnJ0, MaybeDefnCs0),
     delete_uc_preds_from_maybe_foreign_type_defn(MaybeDefnC0, MaybeDefnC),
     delete_uc_preds_from_maybe_foreign_type_defn(MaybeDefnJ0, MaybeDefnJ),
     delete_uc_preds_from_maybe_foreign_type_defn(MaybeDefnCs0, MaybeDefnCs),
-    CJCsMaybeDefn = c_java_csharp(MaybeDefnC, MaybeDefnJ, MaybeDefnCs).
+    CJCsMaybeDefn = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJ, MaybeDefnCs).
 
 :- pred delete_uc_preds_from_maybe_foreign_type_defn_or_enum(
     maybe(foreign_type_or_enum)::in, maybe(foreign_type_or_enum)::out) is det.
@@ -2801,15 +2801,15 @@ make_instance_abstract(Instance) =
 
 %---------------------------------------------------------------------------%
 
-:- pred wrap_cjcs_foreign_type_no_enums(c_j_cs_maybe_defn::in,
-    c_j_cs_maybe_defn_or_enum::out) is det.
+:- pred wrap_cjcs_foreign_type_no_enums(c_j_cs_ml_maybe_defn::in,
+    c_j_cs_ml_maybe_defn_or_enum::out) is det.
 
 wrap_cjcs_foreign_type_no_enums(CJCsMaybeDefn, CJCsMaybeDefnOrEnum) :-
-    CJCsMaybeDefn = c_java_csharp(MaybeDefnC, MaybeDefnJava, MaybeDefnCsharp),
+    CJCsMaybeDefn = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJava, MaybeDefnCsharp),
     wrap_cjcs_foreign_type_no_enum(MaybeDefnC, MaybeDefnOrEnumC),
     wrap_cjcs_foreign_type_no_enum(MaybeDefnJava, MaybeDefnOrEnumJava),
     wrap_cjcs_foreign_type_no_enum(MaybeDefnCsharp, MaybeDefnOrEnumCsharp),
-    CJCsMaybeDefnOrEnum = c_java_csharp(MaybeDefnOrEnumC, MaybeDefnOrEnumJava,
+    CJCsMaybeDefnOrEnum = c_java_csharp_ocaml(MaybeDefnOrEnumC, MaybeDefnOrEnumJava,
         MaybeDefnOrEnumCsharp).
 
 :- pred wrap_cjcs_foreign_type_no_enum(maybe(item_type_defn_info_foreign)::in,
@@ -2827,8 +2827,8 @@ wrap_cjcs_foreign_type_no_enum(MaybeDefn, MaybeDefnOrEnum) :-
 %---------------------------------------------------------------------------%
 
 :- type non_sub_du_extras
-    --->    extras_enum(string, list(string), c_j_cs_maybe_defn_or_enum)
-    ;       extras_non_enum(c_j_cs_maybe_defn).
+    --->    extras_enum(string, list(string), c_j_cs_ml_maybe_defn_or_enum)
+    ;       extras_non_enum(c_j_cs_ml_maybe_defn).
 
 :- pred delete_any_foreign_type_defn_from_extras(non_sub_du_extras::in,
     non_sub_du_extras::out) is det.
@@ -2836,7 +2836,7 @@ wrap_cjcs_foreign_type_no_enum(MaybeDefn, MaybeDefnOrEnum) :-
 delete_any_foreign_type_defn_from_extras(Extras0, Extras) :-
     (
         Extras0 = extras_enum(HeadCtor, TailCtors, MaybeCJCsDefnOrEnum0),
-        MaybeCJCsDefnOrEnum0 = c_java_csharp(MaybeDefnOrEnumC0,
+        MaybeCJCsDefnOrEnum0 = c_java_csharp_ocaml(MaybeDefnOrEnumC0,
             MaybeDefnOrEnumJava0, MaybeDefnOrEnumCsharp0),
         delete_any_foreign_type_defn(MaybeDefnOrEnumC0,
             MaybeDefnOrEnumC),
@@ -2844,12 +2844,12 @@ delete_any_foreign_type_defn_from_extras(Extras0, Extras) :-
             MaybeDefnOrEnumJava),
         delete_any_foreign_type_defn(MaybeDefnOrEnumCsharp0,
             MaybeDefnOrEnumCsharp),
-        MaybeCJCsDefnOrEnum = c_java_csharp(MaybeDefnOrEnumC,
+        MaybeCJCsDefnOrEnum = c_java_csharp_ocaml(MaybeDefnOrEnumC,
             MaybeDefnOrEnumJava, MaybeDefnOrEnumCsharp),
         Extras = extras_enum(HeadCtor, TailCtors, MaybeCJCsDefnOrEnum)
     ;
         Extras0 = extras_non_enum(_MaybeCJCsDefn0),
-        MaybeCJCsDefn = c_java_csharp(no, no, no),
+        MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no),
         Extras = extras_non_enum(MaybeCJCsDefn)
     ).
 
@@ -2872,17 +2872,17 @@ delete_any_foreign_type_defn(MaybeDefnOrEnum0, MaybeDefnOrEnum) :-
     ).
 
 :- pred delete_any_foreign_enum_from_extras(non_sub_du_extras::in,
-    c_j_cs_maybe_defn::out) is det.
+    c_j_cs_ml_maybe_defn::out) is det.
 
 delete_any_foreign_enum_from_extras(Extras0, MaybeCJCsDefn) :-
     (
         Extras0 = extras_enum(_HeadCtor, _TailCtors, MaybeCJCsDefnOrEnum0),
-        MaybeCJCsDefnOrEnum0 = c_java_csharp(MaybeDefnOrEnumC0,
+        MaybeCJCsDefnOrEnum0 = c_java_csharp_ocaml(MaybeDefnOrEnumC0,
             MaybeDefnOrEnumJava0, MaybeDefnOrEnumCsharp0),
         delete_any_foreign_enum(MaybeDefnOrEnumC0, MaybeDefnC),
         delete_any_foreign_enum(MaybeDefnOrEnumJava0, MaybeDefnJava),
         delete_any_foreign_enum(MaybeDefnOrEnumCsharp0, MaybeDefnCsharp),
-        MaybeCJCsDefn = c_java_csharp(MaybeDefnC,
+        MaybeCJCsDefn = c_java_csharp_ocaml(MaybeDefnC,
             MaybeDefnJava, MaybeDefnCsharp)
     ;
         Extras0 = extras_non_enum(MaybeCJCsDefn)

@@ -1609,7 +1609,7 @@ add_type_defn_to_map(TypeDefnInfo, !TypeDefnMap) :-
             AllDefns0 = type_ctor_all_defns(
                 !:AbsSolverDefns, !:SolverDefns,
                 !:AbsStdDefns, !:EqvDefns, !:DuDefns, !:SubDefns,
-                c_java_csharp(!:ForeignDefnsC, !:ForeignDefnsJava,
+                c_java_csharp_ocaml(!:ForeignDefnsC, !:ForeignDefnsJava,
                     !:ForeignDefnsCsharp))
         else
             !:AbsSolverDefns = [],
@@ -1672,7 +1672,7 @@ add_type_defn_to_map(TypeDefnInfo, !TypeDefnMap) :-
         ),
         AllDefns = type_ctor_all_defns(!.AbsSolverDefns, !.SolverDefns,
             !.AbsStdDefns, !.EqvDefns, !.DuDefns, !.SubDefns,
-            c_java_csharp(!.ForeignDefnsC, !.ForeignDefnsJava,
+            c_java_csharp_ocaml(!.ForeignDefnsC, !.ForeignDefnsJava,
                 !.ForeignDefnsCsharp))
     ),
     map.set(TypeCtor, AllDefns, !TypeDefnMap).
@@ -1789,7 +1789,7 @@ add_foreign_enum_item_to_map(ForeignEnumInfo, !ForeignEnumMap) :-
     some [!ForeignEnumsC, !ForeignEnumsJava, !ForeignEnumsCsharp]
     (
         ( if map.search(!.ForeignEnumMap, TypeCtor, AllEnums0) then
-            AllEnums0 = c_java_csharp(!:ForeignEnumsC,
+            AllEnums0 = c_java_csharp_ocaml(!:ForeignEnumsC,
                 !:ForeignEnumsJava, !:ForeignEnumsCsharp)
         else
             !:ForeignEnumsC = [],
@@ -1806,7 +1806,7 @@ add_foreign_enum_item_to_map(ForeignEnumInfo, !ForeignEnumMap) :-
             Lang = lang_csharp,
             !:ForeignEnumsCsharp = !.ForeignEnumsCsharp ++ [ForeignEnumInfo]
         ),
-        AllEnums = c_java_csharp(!.ForeignEnumsC,
+        AllEnums = c_java_csharp_ocaml(!.ForeignEnumsC,
             !.ForeignEnumsJava, !.ForeignEnumsCsharp),
         map.set(TypeCtor, AllEnums, !ForeignEnumMap)
     ).
@@ -1824,7 +1824,7 @@ type_ctor_defn_map_to_type_defns(TypeCtorDefnMap) = TypeDefns :-
 accumulate_type_ctor_defns(CtorAllDefns, !TypeDefns) :-
     CtorAllDefns = type_ctor_all_defns(AbstractSolverDefns, SolverDefns,
         AbstractStdDefns, EqvDefns, DuDefns, SubDefns, CJCsEDefns),
-    CJCsEDefns = c_java_csharp(ForeignDefnsC, ForeignDefnsJava,
+    CJCsEDefns = c_java_csharp_ocaml(ForeignDefnsC, ForeignDefnsJava,
         ForeignDefnsCsharp),
     !:TypeDefns = !.TypeDefns ++ cord.from_list(
         list.map(wrap_abstract_type_defn, at_most_one(AbstractSolverDefns)) ++
