@@ -111,6 +111,9 @@
 :- include_module mlds_to_cs_type.
 :- include_module mlds_to_cs_util.
 
+% MLDS->OCaml back-end.
+:- include_module mlds_to_ocaml_file.
+
 % For debugging the modules in this package.
 :- include_module mlds_dump.
 

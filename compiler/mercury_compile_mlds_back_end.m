@@ -70,6 +70,7 @@
 :- import_module ml_backend.mlds_to_c_util.
 :- import_module ml_backend.mlds_to_cs_file.        % MLDS -> C#
 :- import_module ml_backend.mlds_to_java_file.      % MLDS -> Java
+:- import_module ml_backend.mlds_to_ocaml_file.     % MLDS -> OCaml
 :- import_module ml_backend.rtti_to_mlds.           % HLDS/RTTI -> MLDS
 :- import_module parse_tree.file_names.
 :- import_module parse_tree.write_error_spec.
@@ -393,6 +394,18 @@ mlds_to_csharp(ProgressStream, HLDS, MLDS, Succeeded, !IO) :-
     output_csharp_mlds(HLDS, MLDS, Succeeded, !IO),
     maybe_write_string(ProgressStream, Verbose,
         "% Finished converting MLDS to C#.\n", !IO),
+    maybe_report_stats(ProgressStream, Stats, !IO).
+
+mlds_to_ocaml(ProgressStream, HLDS, MLDS, Succeeded, !IO) :-
+    module_info_get_globals(HLDS, Globals),
+    globals.lookup_bool_option(Globals, verbose, Verbose),
+    globals.lookup_bool_option(Globals, statistics, Stats),
+
+    maybe_write_string(ProgressStream, Verbose,
+        "% Converting MLDS to OCaml...\n", !IO),
+    output_ocaml_mlds(HLDS, MLDS, Succeeded, !IO),
+    maybe_write_string(ProgressStream, Verbose,
+        "% Finished converting MLDS to OCaml.\n", !IO),
     maybe_report_stats(ProgressStream, Stats, !IO).
 
 %---------------------------------------------------------------------------%
