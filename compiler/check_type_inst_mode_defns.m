@@ -167,8 +167,9 @@ check_type_ctor_defns(InsistOnDefn,
         ImpMaybeEnumCJCs, ImpLeftOverEnumsCJCs, !Specs),
 
     ( if map.search(ImpForeignEnumMap, TypeCtor, ImpEnumsCJCs) then
-        ImpEnumsCJCs = c_java_csharp_ocaml(ImpEnumsC, ImpEnumsJava, ImpEnumsCsharp),
-        ImpEnums = ImpEnumsC ++ ImpEnumsJava ++ ImpEnumsCsharp
+        ImpEnumsCJCs = c_java_csharp_ocaml(ImpEnumsC, ImpEnumsJava,
+            ImpEnumsCsharp, ImpEnumsOcaml),
+        ImpEnums = ImpEnumsC ++ ImpEnumsJava ++ ImpEnumsCsharp ++ ImpEnumsOcaml
     else
         ImpEnums = []
     ),
@@ -182,9 +183,9 @@ check_type_ctor_defns(InsistOnDefn,
         ImpAbstractStdMaybeDefn, ImpEqvMaybeDefn,
         ImpDuMaybeDefn, ImpSubMaybeDefn, ImpMaybeDefnCJCs),
     IntMaybeDefnCJCs = c_java_csharp_ocaml(IntMaybeDefnC, IntMaybeDefnJava,
-        IntMaybeDefnCsharp),
+        IntMaybeDefnCsharp, IntMaybeDefnOcaml),
     ImpMaybeDefnCJCs = c_java_csharp_ocaml(ImpMaybeDefnC, ImpMaybeDefnJava,
-        ImpMaybeDefnCsharp),
+        ImpMaybeDefnCsharp, ImpMaybeDefnOcaml),
 
     % Get the contexts of each different definition, in case we later
     % need to generate error messages for them. This is not very efficient
@@ -214,9 +215,11 @@ check_type_ctor_defns(InsistOnDefn,
     IntContextC              = get_maybe_context(IntMaybeDefnC),
     IntContextJava           = get_maybe_context(IntMaybeDefnJava),
     IntContextCsharp         = get_maybe_context(IntMaybeDefnCsharp),
+    IntContextOcaml          = get_maybe_context(IntMaybeDefnOcaml),
     ImpContextC              = get_maybe_context(ImpMaybeDefnC),
     ImpContextJava           = get_maybe_context(ImpMaybeDefnJava),
     ImpContextCsharp         = get_maybe_context(ImpMaybeDefnCsharp),
+    ImpContextOcaml          = get_maybe_context(ImpMaybeDefnOcaml),
 
     % Now we have at most one definition of each kind in each section,
     % and no definition in a section in which that kind is not allowed.
@@ -267,9 +270,9 @@ check_type_ctor_defns(InsistOnDefn,
                 ImpSolverDefn ^ td_context, "solver type", "implementation",
                 "definition", "definition"),
             [IntContextEqv, IntContextDu, IntContextSub,
-                IntContextC, IntContextJava, IntContextCsharp,
+                IntContextC, IntContextJava, IntContextCsharp, IntContextOcaml,
             ImpContextEqv, ImpContextDu, ImpContextSub,
-                ImpContextC, ImpContextJava, ImpContextCsharp],
+                ImpContextC, ImpContextJava, ImpContextCsharp, ImpContextOcaml],
             !Specs),
         list.foldl(
             report_incompatible_foreign_enum(TypeCtor,
@@ -330,9 +333,9 @@ check_type_ctor_defns(InsistOnDefn,
                 EqvDefn ^ td_context, "equivalence type", EqvWhere,
                 "definition", "definition"),
             [IntContextDu, IntContextSub,
-                IntContextC, IntContextJava, IntContextCsharp,
+                IntContextC, IntContextJava, IntContextCsharp, IntContextOcaml,
             ImpContextDu, ImpContextSub,
-                ImpContextC, ImpContextJava, ImpContextCsharp],
+                ImpContextC, ImpContextJava, ImpContextCsharp, ImpContextOcaml],
             !Specs),
         list.foldl(
             report_incompatible_foreign_enum(TypeCtor,
@@ -482,9 +485,9 @@ check_type_ctor_defns(InsistOnDefn,
                 std_mer_type_du_not_all_plain_constants(Status, DuDefn,
                     ChosenMaybeDefnCJCs),
             ChosenMaybeDefnCJCs = c_java_csharp_ocaml(ChosenMaybeDefnC,
-                ChosenMaybeDefnJava, ChosenMaybeDefnCsharp),
+                ChosenMaybeDefnJava, ChosenMaybeDefnCsharp, ChooseMaybeDefnOcaml),
             SrcForeignDefns = get_maybe_type_defns([ChosenMaybeDefnC,
-                ChosenMaybeDefnJava, ChosenMaybeDefnCsharp]),
+                ChosenMaybeDefnJava, ChosenMaybeDefnCsharp, ChooseMaybeDefnOcaml]),
             SrcForeignEnums = []
         ;
             MaybeOnlyConstants = only_plain_constants(HeadName, TailNames),
@@ -532,7 +535,8 @@ check_type_ctor_defns(InsistOnDefn,
         ;
             SortedIntForeignContexts = [],
             ImpForeignContexts = get_maybe_type_defn_contexts([
-                ImpMaybeDefnC, ImpMaybeDefnJava, ImpMaybeDefnCsharp]),
+                ImpMaybeDefnC, ImpMaybeDefnJava, ImpMaybeDefnCsharp,
+                ImpMaybeDefnOcaml]),
             list.sort(ImpForeignContexts, SortedImpForeignContexts),
             FirstForeignContext = list.det_head(SortedImpForeignContexts),
             ForeignWhere = "implementation"
@@ -652,7 +656,7 @@ check_type_ctor_defns(InsistOnDefn,
         list.foldl(
             report_foreign_enum_for_undefined_type(TypeCtor, "undefined"),
             ImpEnums, !Specs),
-        MaybeCJCs = c_java_csharp_ocaml(no, no, no),
+        MaybeCJCs = c_java_csharp_ocaml(no, no, no, no),
         CheckedStdDefn = std_mer_type_abstract(Status,
             AbstractStdDefn, MaybeCJCs),
         SrcDefns = src_defns_std(SrcDefnsInt, SrcDefnsImp, []),
@@ -688,13 +692,13 @@ check_du_foreign_type_section(TypeCtor, DuDefn, DuSection,
         Status, ChosenSectionCJCs, ChosenMaybeDefnCJCs,
         SrcDefnsDuInt, SrcDefnsDuImp, !Specs) :-
     IntMaybeDefnCJCs = c_java_csharp_ocaml(IntMaybeDefnC, IntMaybeDefnJava,
-        IntMaybeDefnCsharp),
+        IntMaybeDefnCsharp, IntMaybeDefnOcaml),
     ImpMaybeDefnCJCs = c_java_csharp_ocaml(ImpMaybeDefnC, ImpMaybeDefnJava,
-        ImpMaybeDefnCsharp),
+        ImpMaybeDefnCsharp, ImpMaybeDefnOcaml),
     IntDefnsCJCs = get_maybe_type_defns([IntMaybeDefnC, IntMaybeDefnJava,
-        IntMaybeDefnCsharp]),
+        IntMaybeDefnCsharp, IntMaybeDefnOcaml]),
     ImpDefnsCJCs = get_maybe_type_defns([ImpMaybeDefnC, ImpMaybeDefnJava,
-        ImpMaybeDefnCsharp]),
+        ImpMaybeDefnCsharp, ImpMaybeDefnOcaml]),
     (
         DuSection = ms_interface,
         list.foldl(
@@ -768,18 +772,18 @@ decide_only_foreign_type_section(TypeCtor,
         IntMaybeDefnCJCs, ImpMaybeDefnCJCs,
         Status, AbsStdDefn, ChosenMaybeDefnCJCs, SrcDefns, !Specs) :-
     IntMaybeDefnCJCs = c_java_csharp_ocaml(IntMaybeDefnC, IntMaybeDefnJava,
-        IntMaybeDefnCsharp),
+        IntMaybeDefnCsharp, IntMaybeDefnOcaml),
     ImpMaybeDefnCJCs = c_java_csharp_ocaml(ImpMaybeDefnC, ImpMaybeDefnJava,
-        ImpMaybeDefnCsharp),
+        ImpMaybeDefnCsharp, ImpMaybeDefnOcaml),
     IntDefnsCJCs = get_maybe_type_defns([IntMaybeDefnC, IntMaybeDefnJava,
-        IntMaybeDefnCsharp]),
+        IntMaybeDefnCsharp, IntMaybeDefnOcaml]),
     ImpDefnsCJCs = get_maybe_type_defns([ImpMaybeDefnC, ImpMaybeDefnJava,
-        ImpMaybeDefnCsharp]),
+        ImpMaybeDefnCsharp, ImpMaybeDefnOcaml]),
     (
         IntAbsStdMaybeDefn = yes(IntAbsStdDefn),
         AbsStdDefn = IntAbsStdDefn,
         IntContexts = get_maybe_type_defn_contexts([IntMaybeDefnC,
-            IntMaybeDefnJava, IntMaybeDefnCsharp]),
+            IntMaybeDefnJava, IntMaybeDefnCsharp, IntMaybeDefnOcaml]),
         list.sort(IntContexts, SortedIntContexts),
         (
             SortedIntContexts = [FirstIntContext | _],
@@ -868,10 +872,12 @@ decide_du_repn_foreign_only_constants(TypeCtor, CtorNames,
     % all the others as well in LeftOverEnumsCJCs so that our caller
     % can generate error messages for them where required.
     set_tree234.list_to_set(CtorNames, CtorNamesSet),
-    MaybeDefnCJCs = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJava, MaybeDefnCsharp),
-    MaybeEnumCJCs = c_java_csharp_ocaml(MaybeEnumC, MaybeEnumJava, MaybeEnumCsharp),
+    MaybeDefnCJCs = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJava,
+        MaybeDefnCsharp, MaybeDefnOcaml),
+    MaybeEnumCJCs = c_java_csharp_ocaml(MaybeEnumC, MaybeEnumJava,
+        MaybeEnumCsharp, MaybeEnumOcaml),
     LeftOverEnumsCJCs = c_java_csharp_ocaml(LeftOverEnumsC, LeftOverEnumsJava,
-        LeftOverEnumsCsharp),
+        LeftOverEnumsCsharp, LeftOverEnumsOcaml),
 
     decide_du_repn_foreign_only_constants_lang(TypeCtor,
         CtorNames, CtorNamesSet, MaybeDefnC,
@@ -885,13 +891,17 @@ decide_du_repn_foreign_only_constants(TypeCtor, CtorNames,
         CtorNames, CtorNamesSet, MaybeDefnCsharp,
         MaybeEnumCsharp, LeftOverEnumsCsharp, MaybeDefnOrEnumCsharp,
         SrcForeignDefnsCsharp, SrcForeignEnumsCsharp, !Specs),
+    decide_du_repn_foreign_only_constants_lang(TypeCtor,
+        CtorNames, CtorNamesSet, MaybeDefnOcaml,
+        MaybeEnumOcaml, LeftOverEnumsOcaml, MaybeDefnOrEnumOcaml,
+        SrcForeignDefnsOcaml, SrcForeignEnumsOcaml, !Specs),
 
     SrcForeignDefns =
-        SrcForeignDefnsC ++ SrcForeignDefnsJava ++ SrcForeignDefnsCsharp,
+        SrcForeignDefnsC ++ SrcForeignDefnsJava ++ SrcForeignDefnsCsharp ++ SrcForeignDefnsOcaml,
     SrcForeignEnums =
-        SrcForeignEnumsC ++ SrcForeignEnumsJava ++ SrcForeignEnumsCsharp,
+        SrcForeignEnumsC ++ SrcForeignEnumsJava ++ SrcForeignEnumsCsharp ++ SrcForeignEnumsOcaml,
     MaybeDefnOrEnumCJCs = c_java_csharp_ocaml(MaybeDefnOrEnumC, MaybeDefnOrEnumJava,
-        MaybeDefnOrEnumCsharp).
+        MaybeDefnOrEnumCsharp, MaybeDefnOrEnumOcaml).
 
 :- pred decide_du_repn_foreign_only_constants_lang(type_ctor::in,
     list(string)::in, set_tree234(string)::in,
@@ -1313,7 +1323,7 @@ check_any_type_ctor_defns_for_duplicates(TypeDefnMap, TypeCtor,
             DuMaybeDefn, SubMaybeDefn, ForeignMaybeDefn)
     else
         MaybeDefn = type_ctor_maybe_defn(no, no, no, no, no, no,
-            c_java_csharp_ocaml(no, no, no))
+            c_java_csharp_ocaml(no, no, no, no))
     ).
 
 :- type decl_or_defn
@@ -1354,14 +1364,16 @@ at_most_one_type_decl_or_defn(DeclOrDefn, Kind, TypeCtor,
 
 at_most_one_foreign_type_for_all_langs(TypeCtor, DefnsCJCs, MaybeDefnCJCs,
         !Specs) :-
-    DefnsCJCs = c_java_csharp_ocaml(DefnsC, DefnsJava, DefnsCsharp),
+    DefnsCJCs = c_java_csharp_ocaml(DefnsC, DefnsJava, DefnsCsharp, DefnsOcaml),
     at_most_one_foreign_type_for_lang(TypeCtor, lang_c,
         DefnsC, MaybeDefnC, !Specs),
     at_most_one_foreign_type_for_lang(TypeCtor, lang_java,
         DefnsJava, MaybeDefnJava, !Specs),
     at_most_one_foreign_type_for_lang(TypeCtor, lang_csharp,
         DefnsCsharp, MaybeDefnCsharp, !Specs),
-    MaybeDefnCJCs = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJava, MaybeDefnCsharp).
+    at_most_one_foreign_type_for_lang(TypeCtor, lang_ocaml,
+        DefnsOcaml, MaybeDefnOcaml, !Specs),
+    MaybeDefnCJCs = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJava, MaybeDefnCsharp, MaybeDefnOcaml).
 
 :- pred check_any_type_ctor_enums_for_duplicates(
     type_ctor_foreign_enum_map::in, type_ctor::in,
@@ -1374,8 +1386,8 @@ check_any_type_ctor_enums_for_duplicates(ForeignEnumMap, TypeCtor,
         at_most_one_foreign_enum_for_all_langs(TypeCtor,
             AllEnums, MaybeEnumCJCs, LeftOverEnumCJCse, !Specs)
     else
-        MaybeEnumCJCs = c_java_csharp_ocaml(no, no, no),
-        LeftOverEnumCJCse = c_java_csharp_ocaml([], [], [])
+        MaybeEnumCJCs = c_java_csharp_ocaml(no, no, no, no),
+        LeftOverEnumCJCse = c_java_csharp_ocaml([], [], [], [])
     ).
 
 :- pred at_most_one_foreign_enum_for_all_langs(type_ctor::in,
@@ -1384,16 +1396,18 @@ check_any_type_ctor_enums_for_duplicates(ForeignEnumMap, TypeCtor,
 
 at_most_one_foreign_enum_for_all_langs(TypeCtor, AllEnumsCJCs,
         MaybeEnumCJCs, LeftOverEnumsCJCs, !Specs) :-
-    AllEnumsCJCs = c_java_csharp_ocaml(EnumsC, EnumsJava, EnumsCsharp),
+    AllEnumsCJCs = c_java_csharp_ocaml(EnumsC, EnumsJava, EnumsCsharp, EnumsOcaml),
     at_most_one_foreign_enum_for_lang(TypeCtor, lang_c,
         EnumsC, MaybeEnumC, LeftOverEnumsC, !Specs),
     at_most_one_foreign_enum_for_lang(TypeCtor, lang_java,
         EnumsJava, MaybeEnumJava, LeftOverEnumsJava, !Specs),
     at_most_one_foreign_enum_for_lang(TypeCtor, lang_csharp,
         EnumsCsharp, MaybeEnumCsharp, LeftOverEnumsCsharp, !Specs),
-    MaybeEnumCJCs = c_java_csharp_ocaml(MaybeEnumC, MaybeEnumJava, MaybeEnumCsharp),
+    at_most_one_foreign_enum_for_lang(TypeCtor, lang_ocaml,
+        EnumsOcaml, MaybeEnumOcaml, LeftOverEnumsOcaml, !Specs),
+    MaybeEnumCJCs = c_java_csharp_ocaml(MaybeEnumC, MaybeEnumJava, MaybeEnumCsharp, MaybeEnumOcaml),
     LeftOverEnumsCJCs = c_java_csharp_ocaml(LeftOverEnumsC,
-        LeftOverEnumsJava, LeftOverEnumsCsharp).
+        LeftOverEnumsJava, LeftOverEnumsCsharp, LeftOverEnumsOcaml).
 
 :- pred report_duplicate_type_decl_or_defn(decl_or_defn::in, string::in,
     type_ctor::in,

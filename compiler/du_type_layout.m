@@ -1421,26 +1421,26 @@ gen_du_functor_repn_name_arity(GenDuFunctorRepn) = Str :-
 
 %---------------------------------------------------------------------------%
 
-:- pred foreign_target_specific_repn(repn_target::in, c_java_csharp_ocaml_ocaml(T)::in,
+:- pred foreign_target_specific_repn(repn_target::in, c_java_csharp_ocaml(T)::in,
     foreign_language::out, T::out) is det.
 
 foreign_target_specific_repn(RepnTarget, CJCs, Lang, Repn) :-
     (
         RepnTarget = repn_target_c(_CRepnTarget),
         Lang = lang_c,
-        CJCs = c_java_csharp_ocaml_ocaml(Repn, _, _, _)
+        CJCs = c_java_csharp_ocaml(Repn, _, _, _)
     ;
         RepnTarget = repn_target_java,
         Lang = lang_java,
-        CJCs = c_java_csharp_ocaml_ocaml(_, Repn, _, _)
+        CJCs = c_java_csharp_ocaml(_, Repn, _, _)
     ;
         RepnTarget = repn_target_csharp,
         Lang = lang_csharp,
-        CJCs = c_java_csharp_ocaml_ocaml(_, _, Repn, _)
+        CJCs = c_java_csharp_ocaml(_, _, Repn, _)
     ;
         RepnTarget = repn_target_ocaml,
         Lang = lang_ocaml,
-        CJCs = c_java_csharp_ocaml_ocaml(_, _, _, Repn)
+        CJCs = c_java_csharp_ocaml(_, _, _, Repn)
     ).
 
 :- pred record_foreign_type_for_target(repn_target::in,
