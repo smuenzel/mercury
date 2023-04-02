@@ -1,5 +1,5 @@
 
-:- module ml_backend.mlds_to_ml_file.
+:- module ml_backend.mlds_to_ocaml_file.
 :- interface.
 
 :- import_module hlds.
@@ -19,6 +19,17 @@
 %---------------------------------------------------------------------------%
 
 :- implementation.
+
+%---------------------------------------------------------------------------%
+
+output_ocaml_mlds(ModuleInfo, MLDS, Succeeded, !IO) :-
+    module_info_get_globals(ModuleInfo, Globals),
+    ModuleName = mlds_get_module_name(MLDS),
+    module_name_to_file_name(Globals, $pred, do_create_dirs,
+        ext_other(other_ext(".ml")), ModuleName, SourceFileName, !IO),
+    Indent = 0,
+    output_to_file_stream(Globals, ModuleName, SourceFileName,
+        output_csharp_src_file(ModuleInfo, Indent, MLDS), Succeeded, !IO).
 
 %---------------------------------------------------------------------------%
 :- end_module ml_backend.mlds_to_ocaml_file.
