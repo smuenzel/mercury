@@ -336,7 +336,7 @@ decide_simple_type_repns_stage_1(TypeCtor, CheckedDefn,
 
 maybe_mark_type_ctor_as_word_aligned_for_c(TypeCtor, MaybeDefnCJCs,
         !WordAlignedTypeCtorsC) :-
-    MaybeDefnCJCs = c_java_csharp_ocaml(MaybeDefnC, _, _),
+    MaybeDefnCJCs = c_java_csharp_ocaml(MaybeDefnC, _, _, _),
     ( if
         MaybeDefnC = yes(DefnC),
         DefnC ^ td_ctor_defn ^ foreign_assertions =
@@ -431,20 +431,23 @@ decide_type_repns_stage_1_du_not_all_plain_constants(TypeCtor, DuDefn,
 %---------------------------------------------------------------------------%
 
 :- pred decide_type_repns_foreign_defns_or_enums(
-    c_j_cs_ml_maybe_defn_or_enum::in, c_j_cs_enum_repn::out) is det.
+    c_j_cs_ml_maybe_defn_or_enum::in, c_j_cs_ml_enum_repn::out) is det.
 
 decide_type_repns_foreign_defns_or_enums(MaybeDefnOrEnumCJCs,
         MaybeRepnCJCs) :-
     MaybeDefnOrEnumCJCs = c_java_csharp_ocaml(MaybeDefnOrEnumC,
-        MaybeDefnOrEnumJava, MaybeDefnOrEnumCsharp),
+        MaybeDefnOrEnumJava, MaybeDefnOrEnumCsharp,
+        MaybeDefnOrEnumOcaml),
     represent_maybe_foreign_defn_or_enum(MaybeDefnOrEnumC,
         MaybeRepnC),
     represent_maybe_foreign_defn_or_enum(MaybeDefnOrEnumJava,
         MaybeRepnJava),
     represent_maybe_foreign_defn_or_enum(MaybeDefnOrEnumCsharp,
         MaybeRepnCsharp),
+    represent_maybe_foreign_defn_or_enum(MaybeDefnOrEnumOcaml,
+        MaybeRepnOcaml),
     MaybeRepnCJCs = c_java_csharp_ocaml(MaybeRepnC, MaybeRepnJava,
-        MaybeRepnCsharp).
+        MaybeRepnCsharp, MaybeRepnOcaml).
 
 :- pred represent_maybe_foreign_defn_or_enum(maybe(foreign_type_or_enum)::in,
     maybe(enum_foreign_repn)::out) is det.
@@ -471,16 +474,17 @@ represent_maybe_foreign_defn_or_enum(MaybeForeignDefnOrEnum,
 %---------------------%
 
 :- pred decide_type_repns_foreign_defns(c_j_cs_ml_maybe_defn::in,
-    c_j_cs_repn::out) is det.
+    c_j_cs_ml_repn::out) is det.
 
 decide_type_repns_foreign_defns(MaybeDefnCJCs, MaybeRepnCJCs) :-
     MaybeDefnCJCs = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJava,
-        MaybeDefnCsharp),
+        MaybeDefnCsharp, MaybeDefnOcaml),
     represent_maybe_foreign_defn(MaybeDefnC, MaybeRepnC),
     represent_maybe_foreign_defn(MaybeDefnJava, MaybeRepnJava),
     represent_maybe_foreign_defn(MaybeDefnCsharp, MaybeRepnCsharp),
+    represent_maybe_foreign_defn(MaybeDefnOcaml, MaybeRepnOcaml),
     MaybeRepnCJCs = c_java_csharp_ocaml(MaybeRepnC, MaybeRepnJava,
-        MaybeRepnCsharp).
+        MaybeRepnCsharp, MaybeRepnOcaml).
 
 :- pred represent_maybe_foreign_defn(maybe(item_type_defn_info_foreign)::in,
     maybe(foreign_type_repn)::out) is det.
@@ -507,6 +511,7 @@ foreign_type_defn_to_repn(ItemTypeDefnInfo, ForeignTypeRepn) :-
     ( LangType = c(c_type(ForeignTypeName))
     ; LangType = java(java_type(ForeignTypeName))
     ; LangType = csharp(csharp_type(ForeignTypeName))
+    ; LangType = ocaml(ocaml_type(ForeignTypeName))
     ),
     ForeignTypeRepn = foreign_type_repn(ForeignTypeName, Assertions).
 
@@ -855,7 +860,7 @@ decide_type_repns_stage_2_du_gen(BaseParams, EqvMap, SubtypeMap,
 
 :- pred decide_type_repns_stage_2_du_gen_only_functor(base_params::in,
     simple_du_map::in, type_ctor::in, list(tvar)::in,
-    tvarset::in, maybe_canonical::in, constructor::in, c_j_cs_repn::in,
+    tvarset::in, maybe_canonical::in, constructor::in, c_j_cs_ml_repn::in,
     type_ctor_repn_map::in, type_ctor_repn_map::out) is det.
 
 decide_type_repns_stage_2_du_gen_only_functor(BaseParams, SimpleDuMap,
@@ -959,7 +964,7 @@ decide_complex_du_only_functor_remote_args(PlatformParams,
 :- pred decide_type_repns_stage_2_du_gen_more_functors(base_params::in,
     set_tree234(type_ctor)::in, simple_du_map::in,
     type_ctor::in, list(tvar)::in, tvarset::in,
-    list(constructor)::in, c_j_cs_repn::in,
+    list(constructor)::in, c_j_cs_ml_repn::in,
     type_ctor_repn_map::in, type_ctor_repn_map::out) is det.
 
 decide_type_repns_stage_2_du_gen_more_functors(BaseParams,
@@ -2371,7 +2376,7 @@ expand_eqv_sub_of_notag_type_fixpoint(TypeEqvMap, SubtypeMap, SimpleDuMap,
         % language definition for C?
         NotagRepn = notag_repn(_NotagFunctorName, NotagFunctorArgType0,
             MaybeCJCsRepn),
-        MaybeCJCsRepn = c_java_csharp_ocaml(no, _, _)
+        MaybeCJCsRepn = c_java_csharp_ocaml(no, _, _, _)
     then
         varset.merge_renaming(TVarSet0, NotagTVarSet0, TVarSet1,
             RenamingNotagTo1),
