@@ -414,6 +414,7 @@ output_java_decl(Info, Stream, Indent, DeclCode, Res, !IO) :-
     ;
         ( Lang = lang_c
         ; Lang = lang_csharp
+        ; Lang = lang_ocaml
         ),
         sorry($pred, "foreign decl other than Java")
     ).
@@ -432,6 +433,7 @@ output_java_body_code(Info, Stream, Indent, ForeignBodyCode, Res, !IO) :-
     ;
         ( Lang = lang_c
         ; Lang = lang_csharp
+        ; Lang = lang_ocaml
         ),
         sorry($pred, "foreign code other than Java")
     ).

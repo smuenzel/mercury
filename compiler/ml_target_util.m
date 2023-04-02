@@ -104,33 +104,41 @@ globals_target_supports_break_and_continue(Globals) = SupportsBreakContinue :-
 target_supports_int_switch(target_c) = yes.
 target_supports_int_switch(target_csharp) = yes.
 target_supports_int_switch(target_java) = yes.
+target_supports_int_switch(target_ocaml) = yes.
 
 target_supports_int64_switch(target_c) = yes.
 target_supports_int64_switch(target_csharp) = yes.
 target_supports_int64_switch(target_java) = no.
+target_supports_int64_switch(target_ocaml) = yes.
 
 target_supports_string_switch(target_c) = no.
 target_supports_string_switch(target_csharp) = yes.
 target_supports_string_switch(target_java) = yes.
     % String switches were added in Java 7, and we now require 8.
+target_supports_string_switch(target_ocaml) = yes.
 
 target_supports_goto(target_c) = yes.
 % XXX C# *does* support gotos but mlds_to_cs_stmt.m currently aborts
 % if it encounters them.
 target_supports_goto(target_csharp) = no.
 target_supports_goto(target_java) = no.
+target_supports_goto(target_ocaml) = no.
 
 target_supports_computed_goto(target_c) = yes.
 target_supports_computed_goto(target_csharp) = no.
 target_supports_computed_goto(target_java) = no.
+target_supports_computed_goto(target_ocaml) = no.
 
 target_supports_break_and_continue(target_c) = yes.
 target_supports_break_and_continue(target_csharp) = yes.
 target_supports_break_and_continue(target_java) = yes.
+target_supports_break_and_continue(target_ocaml) = no.
 
 target_supports_inheritence(target_c) = no.
 target_supports_inheritence(target_csharp) = yes.
 target_supports_inheritence(target_java) = yes.
+% Not sure yet what this is needed for
+target_supports_inheritence(target_ocaml) = yes.
 
 %---------------------------------------------------------------------------%
 :- end_module ml_backend.ml_target_util.

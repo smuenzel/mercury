@@ -166,6 +166,9 @@ ml_gen_foreign_proc(CodeModel, Attributes, PredId, ProcId, Args, ExtraArgs,
         ml_gen_foreign_proc_for_csharp_or_java(ml_target_java, OrdinaryKind,
             Attributes, PredId, ProcId, Args, ExtraArgs,
             ForeignCode, Context, Decls, Stmts, !Info)
+    ;
+        Lang = lang_ocaml,
+        unexpected($pred, "FIXME: unimplemented for OCaml")
     ).
 
 :- type foreign_proc_detism

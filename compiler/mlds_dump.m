@@ -1100,6 +1100,9 @@ mlds_type_to_strcord(MLDS_Type) = Cord :-
         ;
             ForeignType = csharp(csharp_type(TypeName)),
             Cord = strcord("csharp_type(") ++ strcord(TypeName) ++ strcord(")")
+        ;
+            ForeignType = ocaml(ocaml_type(TypeName)),
+            Cord = strcord("ocaml_type(") ++ strcord(TypeName) ++ strcord(")")
         )
     ;
         MLDS_Type = mlds_class_type(ClassId),

@@ -2650,6 +2650,7 @@ mercury_type_to_mlds_type(ModuleInfo, Type) = MLDSType :-
             ;
                 ( Target = target_c
                 ; Target = target_java
+                ; Target = target_ocaml
                 ),
                 MLDSType = mlds_ptr_type(MLDSRefType)
             )
@@ -2826,7 +2827,8 @@ foreign_type_to_mlds_type(ModuleInfo, ForeignTypeBody) = MLDSType :-
     % The body of this function is very similar to the function
     % foreign_type_body_to_exported_type in foreign.m.
     % Any changes here may require changes there as well.
-    ForeignTypeBody = foreign_type_body(MaybeC, MaybeJava, MaybeCSharp),
+    ForeignTypeBody = foreign_type_body(MaybeC, MaybeJava,
+        MaybeCSharp, MaybeOcaml),
     module_info_get_globals(ModuleInfo, Globals),
     globals.get_target(Globals, Target),
     (
@@ -2861,6 +2863,17 @@ foreign_type_to_mlds_type(ModuleInfo, ForeignTypeBody) = MLDSType :-
             MaybeJava = no,
             % This is checked by check_foreign_type in make_hlds.
             unexpected($pred, "no Java foreign type")
+        )
+    ;
+        Target = target_ocaml,
+        (
+            MaybeOcaml = yes(Data),
+            Data = type_details_foreign(OcamlForeignType, _, _),
+            ForeignType = ocaml(OcamlForeignType)
+        ;
+            MaybeOcaml = no,
+            % This is checked by check_foreign_type in make_hlds.
+            unexpected($pred, "no OCaml foreign type")
         )
     ),
     MLDSType = mlds_foreign_type(ForeignType).

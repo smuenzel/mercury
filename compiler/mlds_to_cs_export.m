@@ -180,6 +180,7 @@ output_exported_enum_for_csharp(Info, Stream, Indent, ExportedEnum, !IO) :-
     ;
         ( Lang = lang_c
         ; Lang = lang_java
+        ; Lang = lang_ocaml
         )
     ).
 

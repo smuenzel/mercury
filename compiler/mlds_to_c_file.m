@@ -301,6 +301,7 @@ mlds_output_src_imports(Opts, Stream, Indent, Imports, !IO) :-
     ;
         ( Target = target_java
         ; Target = target_csharp
+        ; Target = target_ocaml
         ),
         unexpected($pred, "expected target c")
     ).
@@ -505,6 +506,7 @@ mlds_output_hdr_start(Opts, Stream, Indent, ModuleName, !IO) :-
     ;
         ( Target = target_java
         ; Target = target_csharp
+        ; Target = target_ocaml
         )
     ),
     output_n_indents(Stream, Indent, !IO),
@@ -568,6 +570,7 @@ mlds_output_hdr_end(Opts, Stream, Indent, ModuleName, !IO) :-
     ;
         ( Target = target_csharp
         ; Target = target_java
+        ; Target = target_ocaml
         )
     ),
     ModuleNameStr = sym_name_to_string(ModuleName),
@@ -898,6 +901,7 @@ mlds_output_c_hdr_decl(Opts, Stream, _Indent, MaybeDesiredIsLocal, DeclCode,
     ;
         ( Lang = lang_java
         ; Lang = lang_csharp
+        ; Lang = lang_ocaml
         ),
         sorry($pred, "foreign code other than C")
     ).
@@ -944,6 +948,7 @@ mlds_output_c_foreign_import_module(Opts, Stream, Indent, FIMSpec, !IO) :-
     ;
         ( Lang = lang_csharp
         ; Lang = lang_java
+        ; Lang = lang_ocaml
         ),
         sorry($pred, "foreign code other than C")
     ).
@@ -961,6 +966,7 @@ mlds_output_c_defn(Opts, Stream, _Indent, ForeignBodyCode, Res, !IO) :-
     ;
         ( Lang = lang_csharp
         ; Lang = lang_java
+        ; Lang = lang_ocaml
         ),
         sorry($pred, "foreign code other than C")
     ).

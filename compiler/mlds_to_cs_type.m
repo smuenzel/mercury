@@ -187,6 +187,9 @@ type_to_string_for_csharp(Info, MLDS_Type, String, ArrayDims) :-
         ;
             ForeignType = java(_),
             unexpected($pred, "java foreign_type")
+        ;
+            ForeignType = ocaml(_),
+            unexpected($pred, "ocaml foreign_type")
         )
     ;
         MLDS_Type = mlds_class_type(ClassId),

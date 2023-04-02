@@ -172,6 +172,9 @@ mlds_output_pragma_export_type(PrefixSuffix, MLDS_Type, Stream, !IO) :-
             ;
                 ForeignType = csharp(_),
                 unexpected($pred, "csharp foreign_type")
+            ;
+                ForeignType = ocaml(_),
+                unexpected($pred, "ocaml foreign_type")
             )
         ;
             MLDS_Type = mlds_ptr_type(Type),
@@ -427,6 +430,7 @@ mlds_output_export_enum(Opts, Stream, _Indent, ExportedEnum, !IO) :-
     ;
         ( Lang = lang_csharp
         ; Lang = lang_java
+        ; Lang = lang_ocaml
         )
     ).
 

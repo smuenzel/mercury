@@ -1148,6 +1148,7 @@ get_default_initializer_for_csharp(Info, Type) = Initializer :-
         ;
             ( ForeignType = c(_)
             ; ForeignType = java(_)
+            ; ForeignType = ocaml(_)
             ),
             unexpected($pred, "wrong foreign language type")
         )
