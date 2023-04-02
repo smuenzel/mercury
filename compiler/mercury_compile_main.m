@@ -604,6 +604,7 @@ do_op_mode_standalone_interface(ProgressStream, ErrorStream, Globals,
     (
         ( Target = target_csharp
         ; Target = target_java
+        ; Target = target_ocaml
         ),
         io.progname_base("mercury_compile", ProgName, !IO),
         Pieces = [fixed(ProgName), suffix(":"), nl,
@@ -822,6 +823,9 @@ do_op_mode_args(ProgressStream, ErrorStream, Globals,
                 % the Java interpreter.
                 create_java_shell_script(Globals, MainModuleName,
                     Succeeded, !IO)
+            ;
+                Target = target_ocaml,
+                sorry($pred, "not implemented")
             ;
                 ( Target = target_c
                 ; Target = target_csharp
@@ -1328,6 +1332,7 @@ find_smart_recompilation_target_files(Globals, FindTargetFiles) :-
     ( CompilationTarget = target_c, TargetOtherExt = other_ext(".c")
     ; CompilationTarget = target_csharp, TargetOtherExt = other_ext(".cs")
     ; CompilationTarget = target_java, TargetOtherExt = other_ext(".java")
+    ; CompilationTarget = target_ocaml, TargetOtherExt = other_ext(".ml")
     ),
     FindTargetFiles = usual_find_target_files(Globals, TargetOtherExt).
 
@@ -1355,6 +1360,9 @@ find_timestamp_files(Globals, FindTimestampFiles) :-
     ;
         CompilationTarget = target_java,
         TimestampOtherExt = other_ext(".java_date")
+    ;
+        CompilationTarget = target_ocaml,
+        TimestampOtherExt = other_ext(".ocaml_date")
     ),
     FindTimestampFiles = find_timestamp_files_2(Globals, TimestampOtherExt).
 
@@ -1975,6 +1983,14 @@ after_front_end_passes(ProgressStream, ErrorStream, Globals, OpModeCodeGen,
             !:Specs = NewSpecs ++ !.Specs,
             % mlds_to_csharp never goes beyond generating C# code.
             mlds_to_csharp(ProgressStream, !.HLDS, MLDS, Succeeded, !IO),
+            ExtraObjFiles = []
+        ;
+            Target = target_ocaml,
+            mlds_backend(ProgressStream, ErrorStream, !.HLDS, _, MLDS,
+                NewSpecs, !DumpInfo, !IO),
+            !:Specs = NewSpecs ++ !.Specs,
+            % mlds_to_ocaml never goes beyond generating OCaml code.
+            mlds_to_ocaml(ProgressStream, !.HLDS, MLDS, Succeeded, !IO),
             ExtraObjFiles = []
         ;
             Target = target_java,

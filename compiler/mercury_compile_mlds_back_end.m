@@ -43,6 +43,9 @@
 :- pred mlds_to_csharp(io.text_output_stream::in, module_info::in, mlds::in,
     maybe_succeeded::out, io::di, io::uo) is det.
 
+:- pred mlds_to_ocaml(io.text_output_stream::in, module_info::in, mlds::in,
+    maybe_succeeded::out, io::di, io::uo) is det.
+
 %---------------------------------------------------------------------------%
 %---------------------------------------------------------------------------%
 

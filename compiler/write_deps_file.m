@@ -1033,6 +1033,10 @@ construct_foreign_import_rules(Globals, AugCompUnit, IntermodDeps,
             Target = target_csharp,
             % XXX We don't implement mmake rules for C#.
             MmakeRulesForeignImports = []
+        ;
+            Target = target_ocaml,
+            % XXX We don't implement mmake rules for OCaml.
+            MmakeRulesForeignImports = []
         )
     ).
 
@@ -1592,6 +1596,7 @@ generate_dv_file(Globals, SourceFileName, ModuleName, DepsMap,
         ( Target = target_c
         ; Target = target_csharp
         ; Target = target_java
+        ; Target = target_ocaml
         ),
         ForeignModulesAndExts = []
     ),
@@ -1760,6 +1765,7 @@ generate_dv_file(Globals, SourceFileName, ModuleName, DepsMap,
         % We don't generate C header files for non-C backends.
         ( Target = target_csharp
         ; Target = target_java
+        ; Target = target_ocaml
         ),
         MihSources = [],
         MhSources = []

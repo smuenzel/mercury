@@ -1346,6 +1346,7 @@ maybe_control_granularity(ProgressStream, Verbose, Stats, !HLDS, !IO) :-
         ;
             ( Target = target_csharp
             ; Target = target_java
+            ; Target = target_ocaml
             )
             % Leave the HLDS alone. We cannot implement parallelism,
             % so there is not point in controlling its granularity.
@@ -1392,6 +1393,7 @@ maybe_control_distance_granularity(ProgressStream, Verbose, Stats,
         ;
             ( Target = target_csharp
             ; Target = target_java
+            ; Target = target_ocaml
             )
             % Leave the HLDS alone. We cannot implement parallelism,
             % so there is not point in controlling its granularity.

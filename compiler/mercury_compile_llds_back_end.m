@@ -832,7 +832,7 @@ llds_get_c_interface_info(HLDS, UseForeignLanguage, ForeignInterfaceInfo) :-
     module_info_get_foreign_decl_codes_user(HLDS, ForeignDeclCodeUserCord),
     module_info_get_foreign_decl_codes_aux(HLDS, ForeignDeclCodeAuxCord),
     module_info_get_foreign_body_codes(HLDS, ForeignBodyCodeCord),
-    module_info_get_c_j_cs_fims(HLDS, CJCsEFIMs0),
+    module_info_get_c_j_cs_ml_fims(HLDS, CJCsEFIMs0),
     ForeignDeclCodes =
         cord.list(ForeignDeclCodeUserCord ++ ForeignDeclCodeAuxCord),
     ForeignBodyCodes = cord.list(ForeignBodyCodeCord),
@@ -896,6 +896,10 @@ make_foreign_import_header_code(Globals, FIMSpec, Include, !IO) :-
         Lang = lang_java,
         sorry($pred, ":- import_module not yet implemented: " ++
             "`:- pragma foreign_import_module' for Java")
+    ;
+        Lang = lang_ocaml,
+        sorry($pred, ":- import_module not yet implemented: " ++
+            "`:- pragma foreign_import_module' for OCaml")
     ).
 
 :- pred proc_chunks_to_c_modules(string::in, list(list(c_procedure))::in,
