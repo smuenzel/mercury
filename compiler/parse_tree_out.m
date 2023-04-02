@@ -1222,6 +1222,9 @@ mercury_output_item_type_defn(Info, Stream, ItemTypeDefn, !IO) :-
         ;
             ForeignType = csharp(_),
             io.write_string(Stream, "csharp, ", !IO)
+        ;
+            ForeignType = ocaml(_),
+            io.write_string(Stream, "ocaml, ", !IO)
         ),
         mercury_output_term_vs(TypeVarSet, print_name_only, TypeTerm,
             Stream, !IO),
@@ -1232,6 +1235,8 @@ mercury_output_item_type_defn(Info, Stream, ItemTypeDefn, !IO) :-
             ForeignType = java(java_type(ForeignTypeStr))
         ;
             ForeignType = csharp(csharp_type(ForeignTypeStr))
+        ;
+            ForeignType = ocaml(ocaml_type(ForeignTypeStr))
         ),
         io.write_string(Stream, ForeignTypeStr, !IO),
         io.write_string(Stream, "\"", !IO),

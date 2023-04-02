@@ -118,14 +118,14 @@ mercury_output_item_type_repn(Info, Stream, ItemTypeRepn, !IO) :-
         (
             TypeRepnFor = type_repn_for_machines,
             io.write_string(Stream, " foreign_type_repn(", !IO),
-            mercury_output_c_j_cs_repn(Stream, TypeRepnFor, 2,
+            mercury_output_c_j_cs_ml_repn(Stream, TypeRepnFor, 2,
                 MaybeCJCsRepn, !IO),
             io.write_string(Stream, ")", !IO)
         ;
             TypeRepnFor = type_repn_for_humans,
             I = indent(1),
             io.format(Stream, "\n%sforeign_type_repn(\n", [s(I)], !IO),
-            mercury_output_c_j_cs_repn(Stream, TypeRepnFor, 2,
+            mercury_output_c_j_cs_ml_repn(Stream, TypeRepnFor, 2,
                 MaybeCJCsRepn, !IO),
             io.format(Stream, "\n%s)", [s(I)], !IO)
         )
@@ -173,7 +173,7 @@ mercury_output_du_direct_dummy(Stream, TypeRepnFor, Indent, DummyRepn, !IO) :-
         io.write_string(Stream, "direct_dummy(", !IO),
         mercury_output_functor_name(FunctorName, Stream, !IO),
         io.write_string(Stream, ", ", !IO),
-        mercury_output_c_j_cs_repn_or_enum(Stream, TypeRepnFor, Indent + 1,
+        mercury_output_c_j_cs_ml_repn_or_enum(Stream, TypeRepnFor, Indent + 1,
             MaybeCJCsRepnOrEnum, !IO),
         io.write_string(Stream, ")", !IO)
     ;
@@ -182,7 +182,7 @@ mercury_output_du_direct_dummy(Stream, TypeRepnFor, Indent, DummyRepn, !IO) :-
         io.format(Stream, "\n%sdirect_dummy(", [s(I)], !IO),
         mercury_output_functor_name(FunctorName, Stream, !IO),
         io.write_string(Stream, ",\n", !IO),
-        mercury_output_c_j_cs_repn_or_enum(Stream, TypeRepnFor, Indent + 1,
+        mercury_output_c_j_cs_ml_repn_or_enum(Stream, TypeRepnFor, Indent + 1,
             MaybeCJCsRepnOrEnum, !IO),
         io.format(Stream, "\n%s)", [s(I)], !IO)
     ).
@@ -213,7 +213,7 @@ mercury_output_du_enum(Stream, TypeRepnFor, Indent, EnumRepn, !IO) :-
             io.write_string(Stream, "]", !IO)
         ),
         io.write_string(Stream, ", ", !IO),
-        mercury_output_c_j_cs_repn_or_enum(Stream, TypeRepnFor, 0,
+        mercury_output_c_j_cs_ml_repn_or_enum(Stream, TypeRepnFor, 0,
             MaybeCJCsRepnOrEnum, !IO),
         io.write_string(Stream, ")", !IO)
     ;
@@ -230,7 +230,7 @@ mercury_output_du_enum(Stream, TypeRepnFor, Indent, EnumRepn, !IO) :-
             mercury_output_one_functor_name(nl_indent(Indent + 2), ""),
             OtherFunctors, Stream, !IO),
         io.format(Stream, ",\n", [], !IO),
-        mercury_output_c_j_cs_repn_or_enum(Stream, TypeRepnFor, Indent1,
+        mercury_output_c_j_cs_ml_repn_or_enum(Stream, TypeRepnFor, Indent1,
             MaybeCJCsRepnOrEnum, !IO),
         io.format(Stream, "\n%s)", [s(I)], !IO)
     ).
@@ -250,7 +250,7 @@ mercury_output_du_notag(Stream, TypeRepnFor, Indent, TVarSet,
         io.write_string(Stream, ", ", !IO),
         mercury_output_type(TVarSet, print_num_only, ArgType, Stream, !IO),
         io.write_string(Stream, ", ", !IO),
-        mercury_output_c_j_cs_repn(Stream, TypeRepnFor, 0, MaybeCJCsRepn, !IO),
+        mercury_output_c_j_cs_ml_repn(Stream, TypeRepnFor, 0, MaybeCJCsRepn, !IO),
         io.write_string(Stream, ")", !IO)
     ;
         TypeRepnFor = type_repn_for_humans,
@@ -261,7 +261,7 @@ mercury_output_du_notag(Stream, TypeRepnFor, Indent, TVarSet,
         io.format(Stream, ",\n%s", [s(I1)], !IO),
         mercury_output_type(TVarSet, print_num_only, ArgType, Stream, !IO),
         io.format(Stream, ",\n", [], !IO),
-        mercury_output_c_j_cs_repn(Stream, TypeRepnFor, Indent + 1,
+        mercury_output_c_j_cs_ml_repn(Stream, TypeRepnFor, Indent + 1,
             MaybeCJCsRepn, !IO),
         io.format(Stream, "\n%s)", [s(I)], !IO)
     ).
@@ -288,7 +288,7 @@ mercury_output_du_only_functor(Stream, TypeRepnFor, Indent, TVarSet,
             mercury_output_only_nonconstant_repn(TypeRepnFor, 0),
             CRepns, Stream, !IO),
         io.write_string(Stream, ", ", !IO),
-        mercury_output_c_j_cs_repn(Stream, TypeRepnFor, 0, MaybeCJCsRepn, !IO),
+        mercury_output_c_j_cs_ml_repn(Stream, TypeRepnFor, 0, MaybeCJCsRepn, !IO),
         io.write_string(Stream, ")", !IO)
     ;
         TypeRepnFor = type_repn_for_humans,
@@ -307,7 +307,7 @@ mercury_output_du_only_functor(Stream, TypeRepnFor, Indent, TVarSet,
             mercury_output_only_nonconstant_repn(TypeRepnFor, Indent2),
             CRepns, Stream, !IO),
         io.format(Stream, ",\n", [], !IO),
-        mercury_output_c_j_cs_repn(Stream, TypeRepnFor, Indent1,
+        mercury_output_c_j_cs_ml_repn(Stream, TypeRepnFor, Indent1,
             MaybeCJCsRepn, !IO),
         io.format(Stream, "\n%s)", [s(I)], !IO)
     ).
@@ -344,7 +344,7 @@ mercury_output_du_more_functors(Stream, TypeRepnFor, Indent, TVarSet,
             io.write_string(Stream, "]", !IO)
         ),
         io.write_string(Stream, ", ", !IO),
-        mercury_output_c_j_cs_repn(Stream, TypeRepnFor, 0, MaybeCJCsRepn, !IO),
+        mercury_output_c_j_cs_ml_repn(Stream, TypeRepnFor, 0, MaybeCJCsRepn, !IO),
         io.write_string(Stream, ")", !IO)
     ;
         TypeRepnFor = type_repn_for_humans,
@@ -362,7 +362,7 @@ mercury_output_du_more_functors(Stream, TypeRepnFor, Indent, TVarSet,
                 TVarSet),
             OtherFunctors, Stream, !IO),
         io.format(Stream, ",\n", [], !IO),
-        mercury_output_c_j_cs_repn(Stream, TypeRepnFor, Indent1,
+        mercury_output_c_j_cs_ml_repn(Stream, TypeRepnFor, Indent1,
             MaybeCJCsRepn, !IO),
         io.format(Stream, "\n%s)", [s(I)], !IO)
     ).
@@ -706,19 +706,20 @@ fill_kind_size_to_string(FillKindSize) = Str :-
 
 %---------------------------------------------------------------------------%
 
-:- pred mercury_output_c_j_cs_repn_or_enum(io.text_output_stream::in,
-    type_repn_for::in, int::in, c_j_cs_enum_repn::in, io::di, io::uo) is det.
+:- pred mercury_output_c_j_cs_ml_repn_or_enum(io.text_output_stream::in,
+    type_repn_for::in, int::in, c_j_cs_ml_enum_repn::in, io::di, io::uo) is det.
 
-mercury_output_c_j_cs_repn_or_enum(Stream, TypeRepnFor, Indent,
+mercury_output_c_j_cs_ml_repn_or_enum(Stream, TypeRepnFor, Indent,
         MaybeCJCsRepnOrEnum, !IO) :-
     MaybeCJCsRepnOrEnum = c_java_csharp_ocaml(MaybeRepnOrEnumC, MaybeRepnOrEnumJava,
-        MaybeRepnOrEnumCsharp),
+        MaybeRepnOrEnumCsharp,MaybeRepnOrEnumOcaml),
     Indent1 = Indent + 1,
     I = indent(Indent),
     ( if
         MaybeRepnOrEnumC = no,
         MaybeRepnOrEnumJava = no,
-        MaybeRepnOrEnumCsharp = no
+        MaybeRepnOrEnumCsharp = no,
+        MaybeRepnOrEnumOcaml = no
     then
         (
             TypeRepnFor = type_repn_for_machines,
@@ -739,6 +740,9 @@ mercury_output_c_j_cs_repn_or_enum(Stream, TypeRepnFor, Indent,
             io.write_string(Stream, ", ", !IO),
             mercury_output_maybe_enum_foreign_repn(Stream, TypeRepnFor,
                 Indent1, MaybeRepnOrEnumCsharp, !IO),
+            io.write_string(Stream, ", ", !IO),
+            mercury_output_maybe_enum_foreign_repn(Stream, TypeRepnFor,
+                Indent1, MaybeRepnOrEnumOcaml, !IO),
             io.write_string(Stream, ")", !IO)
         ;
             TypeRepnFor = type_repn_for_humans,
@@ -751,19 +755,24 @@ mercury_output_c_j_cs_repn_or_enum(Stream, TypeRepnFor, Indent,
             io.write_string(Stream, ",\n", !IO),
             mercury_output_maybe_enum_foreign_repn(Stream, TypeRepnFor,
                 Indent1, MaybeRepnOrEnumCsharp, !IO),
+            io.write_string(Stream, ",\n", !IO),
+            mercury_output_maybe_enum_foreign_repn(Stream, TypeRepnFor,
+                Indent1, MaybeRepnOrEnumOcaml, !IO),
             io.format(Stream, "\n%s)", [s(I)], !IO)
         )
     ).
 
-:- pred mercury_output_c_j_cs_repn(io.text_output_stream::in,
-    type_repn_for::in, int::in, c_j_cs_repn::in, io::di, io::uo) is det.
+:- pred mercury_output_c_j_cs_ml_repn(io.text_output_stream::in,
+    type_repn_for::in, int::in, c_j_cs_ml_repn::in, io::di, io::uo) is det.
 
-mercury_output_c_j_cs_repn(Stream, TypeRepnFor, Indent, MaybeCJCsRepn, !IO) :-
-    MaybeCJCsRepn = c_java_csharp_ocaml(MaybeRepnC, MaybeRepnJava, MaybeRepnCsharp),
+mercury_output_c_j_cs_ml_repn(Stream, TypeRepnFor, Indent, MaybeCJCsRepn, !IO) :-
+    MaybeCJCsRepn = c_java_csharp_ocaml(MaybeRepnC, MaybeRepnJava,
+        MaybeRepnCsharp, MaybeRepnOcaml),
     ( if
         MaybeRepnC = no,
         MaybeRepnJava = no,
-        MaybeRepnCsharp = no
+        MaybeRepnCsharp = no,
+        MaybeRepnOcaml = no
     then
         (
             TypeRepnFor = type_repn_for_machines,
@@ -786,6 +795,9 @@ mercury_output_c_j_cs_repn(Stream, TypeRepnFor, Indent, MaybeCJCsRepn, !IO) :-
             io.write_string(Stream, ", ", !IO),
             mercury_output_maybe_foreign_type_repn(Stream, TypeRepnFor,
                 Indent1, MaybeRepnCsharp, !IO),
+            io.write_string(Stream, ", ", !IO),
+            mercury_output_maybe_foreign_type_repn(Stream, TypeRepnFor,
+                Indent1, MaybeRepnOcaml, !IO),
             io.write_string(Stream, ")", !IO)
         ;
             TypeRepnFor = type_repn_for_humans,
@@ -799,6 +811,9 @@ mercury_output_c_j_cs_repn(Stream, TypeRepnFor, Indent, MaybeCJCsRepn, !IO) :-
             io.write_string(Stream, ",\n", !IO),
             mercury_output_maybe_foreign_type_repn(Stream, TypeRepnFor,
                 Indent1, MaybeRepnCsharp, !IO),
+            io.write_string(Stream, ",\n", !IO),
+            mercury_output_maybe_foreign_type_repn(Stream, TypeRepnFor,
+                Indent1, MaybeRepnOcaml, !IO),
             io.format(Stream, "\n%s)", [s(I)], !IO)
         )
     ).

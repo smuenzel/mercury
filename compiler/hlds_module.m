@@ -309,8 +309,8 @@
     type_spec_info::out) is det.
 :- pred module_info_get_const_struct_db(module_info::in,
     const_struct_db::out) is det.
-:- pred module_info_get_c_j_cs_fims(module_info::in,
-    c_j_cs_fims::out) is det.
+:- pred module_info_get_c_j_cs_ml_fims(module_info::in,
+    c_j_cs_ml_fims::out) is det.
 :- pred module_info_get_pragma_exported_procs(module_info::in,
     cord(pragma_exported_proc)::out) is det.
 
@@ -421,7 +421,7 @@
     module_info::in, module_info::out) is det.
 :- pred module_info_set_const_struct_db(const_struct_db::in,
     module_info::in, module_info::out) is det.
-:- pred module_info_set_c_j_cs_fims(c_j_cs_fims::in,
+:- pred module_info_set_c_j_cs_ml_fims(c_j_cs_ml_fims::in,
     module_info::in, module_info::out) is det.
 :- pred module_info_set_pragma_exported_procs(cord(pragma_exported_proc)::in,
     module_info::in, module_info::out) is det.
@@ -777,7 +777,7 @@
                 % of the program.
                 msi_const_struct_db             :: const_struct_db,
 
-                msi_c_j_cs_fims                 :: c_j_cs_fims,
+                msi_c_j_cs_ml_fims                 :: c_j_cs_ml_fims,
 
                 % List of the procs for which there is a
                 % pragma foreign_export(...) declaration.
@@ -1318,8 +1318,8 @@ module_info_get_type_spec_info(MI, X) :-
     X = MI ^ mi_sub_info ^ msi_type_spec_info.
 module_info_get_const_struct_db(MI, X) :-
     X = MI ^ mi_sub_info ^ msi_const_struct_db.
-module_info_get_c_j_cs_fims(MI, X) :-
-    X = MI ^ mi_sub_info ^ msi_c_j_cs_fims.
+module_info_get_c_j_cs_ml_fims(MI, X) :-
+    X = MI ^ mi_sub_info ^ msi_c_j_cs_ml_fims.
 module_info_get_pragma_exported_procs(MI, X) :-
     X = MI ^ mi_sub_info ^ msi_pragma_exported_procs.
 
@@ -1450,8 +1450,8 @@ module_info_set_const_struct_db(X, !MI) :-
     else
         !MI ^ mi_sub_info ^ msi_const_struct_db := X
     ).
-module_info_set_c_j_cs_fims(X, !MI) :-
-    !MI ^ mi_sub_info ^ msi_c_j_cs_fims := X.
+module_info_set_c_j_cs_ml_fims(X, !MI) :-
+    !MI ^ mi_sub_info ^ msi_c_j_cs_ml_fims := X.
 module_info_set_pragma_exported_procs(X, !MI) :-
     ( if
         private_builtin.pointer_equal(X,
@@ -1662,10 +1662,10 @@ module_add_foreign_body_code(ForeignBodyCode, !Module) :-
     module_info_set_foreign_body_codes(ForeignBodyCodes, !Module).
 
 module_add_item_fim(ItemFIM, !Module) :-
-    module_info_get_c_j_cs_fims(!.Module, FIMs0),
+    module_info_get_c_j_cs_ml_fims(!.Module, FIMs0),
     ItemFIM = item_fim(Lang, ModuleName, _Context, _SeqNum),
     add_fim(Lang, ModuleName, FIMs0, FIMs),
-    module_info_set_c_j_cs_fims(FIMs, !Module).
+    module_info_set_c_j_cs_ml_fims(FIMs, !Module).
 
 module_add_fact_table_file(FileName, !Module) :-
     FileNames0 = !.Module ^ mi_rare_info ^ mri_fact_table_file_names,

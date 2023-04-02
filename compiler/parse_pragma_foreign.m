@@ -239,6 +239,9 @@ parse_foreign_language_type(ContextPieces, InputTerm, VarSet, MaybeLanguage,
             ;
                 Language = lang_csharp,
                 ForeignLangType = csharp(csharp_type(ForeignTypeName))
+            ;
+                Language = lang_ocaml,
+                ForeignLangType = ocaml(ocaml_type(ForeignTypeName))
             ),
             ( if ForeignTypeName = "" then
                 Pieces = cord.list(ContextPieces) ++
@@ -1120,6 +1123,7 @@ check_required_attributes(Lang, Attrs, _Context) = MaybeAttrs :-
         ( Lang = lang_c
         ; Lang = lang_csharp
         ; Lang = lang_java
+        ; Lang = lang_ocaml
         ),
         MaybeAttrs = ok1(Attrs)
     ).

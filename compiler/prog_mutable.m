@@ -102,12 +102,13 @@ implement_mutable(ModuleParams, ItemMutable,
         !ForeignDeclCodes, !ForeignBodyCodes, !PredTargetNames) :-
     ItemMutable = item_mutable_info(MutableName,
         _OrigType, Type, _OrigInst, _Inst,
-        _InitTerm, _VarSetMutable, MutAttrs, Context, _SeqNum),
+        InitTerm, _VarSetMutable, MutAttrs, Context, _SeqNum),
     Globals = ModuleParams ^ mp_globals,
     get_target_params(Globals, TargetParams),
     Lang = TargetParams ^ tp_target_lang,
     define_mutable_global_var(ModuleParams, Lang, MutableName, Type, MutAttrs,
-        Context, TargetMutableName, !ForeignDeclCodes, !ForeignBodyCodes),
+        Context, TargetMutableName, InitTerm, !ForeignDeclCodes,
+        !ForeignBodyCodes),
     declare_and_define_mutable_aux_preds(ModuleParams, TargetParams,
         ItemMutable, TargetMutableName,
         PredDecls, ClauseInfos, ForeignProcs, FPEInfo, !PredTargetNames).
@@ -119,12 +120,13 @@ implement_mutable(ModuleParams, ItemMutable,
 
 :- pred define_mutable_global_var(module_params::in, foreign_language::in,
     string::in, mer_type::in, mutable_var_attributes::in, prog_context::in,
-    string::out,
+    string::out, prog_term::in,
     cord(foreign_decl_code)::in, cord(foreign_decl_code)::out,
     cord(foreign_body_code)::in, cord(foreign_body_code)::out) is det.
 
 define_mutable_global_var(ModuleParams, Lang, MutableName, Type, MutAttrs,
-        Context, TargetMutableName, !ForeignDeclCodes, !ForeignBodyCodes) :-
+        Context, TargetMutableName, InitTerm, !ForeignDeclCodes,
+        !ForeignBodyCodes) :-
     MutAttrs = mutable_var_attributes(LangMap, Const),
     ModuleName = ModuleParams ^ mp_module_name,
     mutable_target_var_name(ModuleName, MutableName, LangMap, Lang,
@@ -142,6 +144,10 @@ define_mutable_global_var(ModuleParams, Lang, MutableName, Type, MutAttrs,
         Lang = lang_java,
         define_mutable_global_var_java(TargetMutableName, Type,
             Const, Context, ForeignBodyCode)
+    ;
+        Lang = lang_ocaml,
+        define_mutable_global_var_ocaml(ModuleParams, TargetMutableName, Type,
+            Const, Context, InitTerm, ForeignBodyCode)
     ),
     cord.snoc(ForeignBodyCode, !ForeignBodyCodes).
 
@@ -314,6 +320,25 @@ define_mutable_global_var_java(TargetMutableName, Type, Const, Context,
     ForeignBodyCode =
         foreign_body_code(lang_java, floi_literal(DefnBodyStr), Context).
 
+:- pred define_mutable_global_var_ocaml(module_params::in,string::in, mer_type::in,
+    mutable_maybe_constant::in, prog_context::in, prog_term::in,
+    foreign_body_code::out) is det.
+
+define_mutable_global_var_ocaml(ModuleParams, TargetMutableName, Type, _Const,
+        Context, _InitTerm, ForeignBodyCode) :-
+%FIXME domains, thread-local, etc
+    TypeName = global_foreign_type_name(ModuleParams,
+            bp_native_if_possible, lang_ocaml, Type),
+    DefnBodyStr = string.format(
+    %FIXME: wrong
+        "let %s : %s = ref (Obj.magic 0)\n",
+        [ s(TargetMutableName), s(TypeName)]
+        ),
+    
+    ForeignBodyCode =
+        foreign_body_code(lang_ocaml, floi_literal(DefnBodyStr), Context).
+
+
 %---------------------------------------------------------------------------%
 
 declare_mutable_aux_preds_for_int0(ModuleName, ItemMutable)
@@ -375,6 +400,7 @@ declare_and_define_mutable_aux_preds(ModuleParams, TargetParams, ItemMutable,
     ;
         ( Lang = lang_csharp
         ; Lang = lang_java
+        ; Lang = lang_ocaml
         ),
         % The mutable variable name is not module-qualified, and so
         % it must not be exported to `.opt' files. We could add the
@@ -496,6 +522,10 @@ do_we_need_pre_init_lock_unlock(Lang, Local, PreInit, LockUnlock) :-
         Lang = lang_java,
         PreInit = dont_need_pre_init_pred,
         LockUnlock = dont_need_lock_unlock_preds
+    ;
+        Lang = lang_ocaml,
+        PreInit = dont_need_pre_init_pred,
+        LockUnlock = dont_need_lock_unlock_preds
     ).
 
 %---------------------------------------------------------------------------%
@@ -542,6 +572,9 @@ define_pre_init_pred(ModuleName, TargetParams, MutableName, Local, Context,
     ;
         Lang = lang_java,
         unexpected($pred, "preinit for java")
+    ;
+        Lang = lang_ocaml,
+        unexpected($pred, "preinit for ocaml")
     ),
     PreInitFCInfo = pragma_info_foreign_proc(Attrs,
         PreInitPredName,
@@ -639,6 +672,9 @@ define_lock_unlock_preds(ModuleName, TargetParams, MutableName, Local, Context,
     ;
         Lang = lang_java,
         unexpected($pred, "lock_unlock for java")
+    ;
+        Lang = lang_ocaml,
+        unexpected($pred, "lock_unlock for ocaml")
     ).
 
 %---------------------------------------------------------------------------%
@@ -749,6 +785,13 @@ define_unsafe_get_set_preds(ModuleParams, TargetParams, MutableName,
             UnsafeSetCode =
                 string.format("\t%s.set(X);\n", [s(TargetMutableName)])
         )
+    ;
+        Lang = lang_ocaml,
+        TrailCode = "",
+        UnsafeGetCode =
+            string.format("\tlet X = !%s in\n", [s(TargetMutableName)]),
+        UnsafeSetCode =
+            string.format("\t%s := X;\n", [s(TargetMutableName)])
     ),
     UnsafeGetPredName =
         mutable_unsafe_get_pred_name(ModuleName, MutableName),
@@ -818,12 +861,16 @@ define_constant_get_set_preds(ModuleName, TargetParams, MutableName, Inst,
         ConstantGetAttrs0, ConstantGetAttrs),
     ConstantSetAttrs = Attrs,
     (
-        ( Lang = lang_c
-        ; Lang = lang_csharp
-        ; Lang = lang_java
-        ),
-        ConstantGetCode = string.format("X = %s;\n", [s(TargetMutableName)]),
-        ConstantSetCode = string.format("%s = X;\n", [s(TargetMutableName)])
+            ( Lang = lang_c
+            ; Lang = lang_csharp
+            ; Lang = lang_java
+            ),
+            ConstantGetCode = string.format("X = %s;\n", [s(TargetMutableName)]),
+            ConstantSetCode = string.format("%s = X;\n", [s(TargetMutableName)])
+        ;
+            Lang = lang_ocaml,
+            ConstantGetCode = string.format("let X = !%s in\n", [s(TargetMutableName)]),
+            ConstantSetCode = string.format("%s := X;\n", [s(TargetMutableName)])
     ),
     ConstantGetFCInfo = pragma_info_foreign_proc(ConstantGetAttrs,
         ConstantGetPredName,
@@ -909,6 +956,7 @@ define_nonconstant_get_set_preds(ModuleName, TargetParams, MutableName,
         ( Lang = lang_c
         ; Lang = lang_csharp
         ; Lang = lang_java
+        ; Lang = lang_ocaml
         ),
         (
             MaybeLockUnlockExprs = no,
@@ -1065,6 +1113,10 @@ get_target_params(Globals, TargetParams) :-
     ;
         CompilationTarget = target_java,
         Lang = lang_java,
+        BoxPolicy = bp_native_if_possible
+    ;
+        CompilationTarget = target_ocaml,
+        Lang = lang_ocaml,
         BoxPolicy = bp_native_if_possible
     ),
     TargetParams = mutable_target_params(Lang, BoxPolicy).

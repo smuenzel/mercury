@@ -304,7 +304,7 @@ parse_type_repn_du_direct_dummy(VarSet, TermContext, ArgTerms, MaybeDuRepn) :-
         parse_string(VarSet, ContextPieces1, "function symbol",
             ArgTerm1, MaybeFunctorName),
         DescPieces2 = [words("the second argument of"), quote("direct_dummy")],
-        parse_c_j_cs_repn_or_enum(DescPieces2, VarSet, ArgTerm2,
+        parse_c_j_cs_ml_repn_or_enum(DescPieces2, VarSet, ArgTerm2,
             MaybeCJCsRepnOrEnum),
         ( if
             MaybeFunctorName = ok1(FunctorName),
@@ -363,7 +363,7 @@ parse_type_repn_du_enum(VarSet, TermContext, ArgTerms, MaybeDuRepn) :-
             LaterEnumSpecs = [LaterEnumSpec]
         ),
         DescPieces4 = [words("the fourth argument of"), quote("enum")],
-        parse_c_j_cs_repn_or_enum(DescPieces4, VarSet, ArgTerm4,
+        parse_c_j_cs_ml_repn_or_enum(DescPieces4, VarSet, ArgTerm4,
             MaybeCJCsRepnOrEnum),
         ( if
             MaybeEnumFunctorName1 = ok1(EnumFunctorName1),
@@ -429,7 +429,7 @@ parse_type_repn_du_notag(VarSet, TermContext, ArgTerms, MaybeDuRepn) :-
         parse_type(allow_ho_inst_info, VarSet, ContextPieces2,
             ArgTerm2, MaybeArgType),
         DescPieces3 = [words("the third argument of"), quote("notag")],
-        parse_c_j_cs_repn(DescPieces3, VarSet, ArgTerm3, MaybeCJCsRepn),
+        parse_c_j_cs_ml_repn(DescPieces3, VarSet, ArgTerm3, MaybeCJCsRepn),
         ( if
             MaybeFunctorName = ok1(FunctorName),
             MaybeArgType = ok1(ArgType),
@@ -489,7 +489,7 @@ parse_type_repn_du_gen_du_only_functor(VarSet, TermContext, AtomStr, ArgTerms,
             ArgTerm3, MaybeCRepns),
         DescPieces4 = [words("fourth argument of"),
             quote(AtomStr)],
-        parse_c_j_cs_repn(DescPieces4, VarSet, ArgTerm4, MaybeCJCsRepn),
+        parse_c_j_cs_ml_repn(DescPieces4, VarSet, ArgTerm4, MaybeCJCsRepn),
         ( if
             MaybeFunctorName = ok1(FunctorName),
             MaybeCRepns = ok1(CRepns),
@@ -552,7 +552,7 @@ parse_type_repn_du_gen_du_more_functors(VarSet, TermContext, AtomStr, ArgTerms,
         ),
         DescPieces4 = [words("fourth argument of"),
             quote(AtomStr)],
-        parse_c_j_cs_repn(DescPieces4, VarSet, ArgTerm4, MaybeCJCsRepn),
+        parse_c_j_cs_ml_repn(DescPieces4, VarSet, ArgTerm4, MaybeCJCsRepn),
         ( if
             MaybeFunctor1 = ok1(Functor1),
             MaybeFunctor2 = ok1(Functor2),
@@ -1743,10 +1743,10 @@ ok_if_arity_zero(AtomStr, TermContext, ArgTerms, FillKindSize,
 % in their position inside c_j_cs.
 %
 
-:- pred parse_c_j_cs_repn_or_enum(list(format_piece)::in,
-    varset::in, term::in, maybe1(c_j_cs_enum_repn)::out) is det.
+:- pred parse_c_j_cs_ml_repn_or_enum(list(format_piece)::in,
+    varset::in, term::in, maybe1(c_j_cs_ml_enum_repn)::out) is det.
 
-parse_c_j_cs_repn_or_enum(DescPieces, VarSet, Term, MaybeCJCsRepnOrEnum) :-
+parse_c_j_cs_ml_repn_or_enum(DescPieces, VarSet, Term, MaybeCJCsRepnOrEnum) :-
     ( if
         Term = term.functor(term.atom(AtomStr), ArgTerms, TermContext),
         ( AtomStr = "no_c_j_cs"
@@ -1757,7 +1757,7 @@ parse_c_j_cs_repn_or_enum(DescPieces, VarSet, Term, MaybeCJCsRepnOrEnum) :-
             AtomStr = "no_c_j_cs",
             (
                 ArgTerms = [],
-                CJCsRepnOrEnum = c_java_csharp_ocaml(no, no, no),
+                CJCsRepnOrEnum = c_java_csharp_ocaml(no, no, no, no),
                 MaybeCJCsRepnOrEnum = ok1(CJCsRepnOrEnum)
             ;
                 ArgTerms = [_ | _],
@@ -1778,19 +1778,24 @@ parse_c_j_cs_repn_or_enum(DescPieces, VarSet, Term, MaybeCJCsRepnOrEnum) :-
                     VarSet, ArgTerm2, MaybeMaybeRepnOrEnumJava),
                 parse_maybe_enum_foreign_repn(DescPieces, 3,
                     VarSet, ArgTerm3, MaybeMaybeRepnOrEnumCsharp),
+                parse_maybe_enum_foreign_repn(DescPieces, 4,
+                    VarSet, ArgTerm2, MaybeMaybeRepnOrEnumOcaml),
                 ( if
                     MaybeMaybeRepnOrEnumC = ok1(MaybeRepnOrEnumC),
                     MaybeMaybeRepnOrEnumJava = ok1(MaybeRepnOrEnumJava),
-                    MaybeMaybeRepnOrEnumCsharp = ok1(MaybeRepnOrEnumCsharp)
+                    MaybeMaybeRepnOrEnumCsharp = ok1(MaybeRepnOrEnumCsharp),
+                    MaybeMaybeRepnOrEnumOcaml = ok1(MaybeRepnOrEnumOcaml)
                 then
                     CJCsRepnOrEnum = c_java_csharp_ocaml(MaybeRepnOrEnumC,
-                        MaybeRepnOrEnumJava, MaybeRepnOrEnumCsharp),
+                        MaybeRepnOrEnumJava, MaybeRepnOrEnumCsharp,
+                        MaybeRepnOrEnumOcaml),
                     MaybeCJCsRepnOrEnum = ok1(CJCsRepnOrEnum)
                 else
                     Specs =
                         get_any_errors1(MaybeMaybeRepnOrEnumC) ++
                         get_any_errors1(MaybeMaybeRepnOrEnumJava) ++
-                        get_any_errors1(MaybeMaybeRepnOrEnumCsharp),
+                        get_any_errors1(MaybeMaybeRepnOrEnumCsharp) ++
+                        get_any_errors1(MaybeMaybeRepnOrEnumOcaml),
                     MaybeCJCsRepnOrEnum = error1(Specs)
                 )
             ;
@@ -1818,10 +1823,10 @@ parse_c_j_cs_repn_or_enum(DescPieces, VarSet, Term, MaybeCJCsRepnOrEnum) :-
         MaybeCJCsRepnOrEnum = error1([Spec])
     ).
 
-:- pred parse_c_j_cs_repn(list(format_piece)::in,
-    varset::in, term::in, maybe1(c_j_cs_repn)::out) is det.
+:- pred parse_c_j_cs_ml_repn(list(format_piece)::in,
+    varset::in, term::in, maybe1(c_j_cs_ml_repn)::out) is det.
 
-parse_c_j_cs_repn(DescPieces, VarSet, Term, MaybeCJCsRepn) :-
+parse_c_j_cs_ml_repn(DescPieces, VarSet, Term, MaybeCJCsRepn) :-
     ( if
         Term = term.functor(term.atom(AtomStr), ArgTerms, TermContext),
         ( AtomStr = "no_c_j_cs"
@@ -1832,7 +1837,7 @@ parse_c_j_cs_repn(DescPieces, VarSet, Term, MaybeCJCsRepn) :-
             AtomStr = "no_c_j_cs",
             (
                 ArgTerms = [],
-                CJCsRepn = c_java_csharp_ocaml(no, no, no),
+                CJCsRepn = c_java_csharp_ocaml(no, no, no, no),
                 MaybeCJCsRepn = ok1(CJCsRepn)
             ;
                 ArgTerms = [_ | _],
@@ -1853,19 +1858,23 @@ parse_c_j_cs_repn(DescPieces, VarSet, Term, MaybeCJCsRepn) :-
                     VarSet, ArgTerm2, MaybeMaybeRepnJava),
                 parse_maybe_foreign_repn(DescPieces, 3,
                     VarSet, ArgTerm3, MaybeMaybeRepnCsharp),
+                parse_maybe_foreign_repn(DescPieces, 4,
+                    VarSet, ArgTerm2, MaybeMaybeRepnOcaml),
                 ( if
                     MaybeMaybeRepnC = ok1(MaybeRepnC),
                     MaybeMaybeRepnJava = ok1(MaybeRepnJava),
-                    MaybeMaybeRepnCsharp = ok1(MaybeRepnCsharp)
+                    MaybeMaybeRepnCsharp = ok1(MaybeRepnCsharp),
+                    MaybeMaybeRepnOcaml = ok1(MaybeRepnOcaml)
                 then
                     CJCsRepn = c_java_csharp_ocaml(MaybeRepnC, MaybeRepnJava,
-                        MaybeRepnCsharp),
+                        MaybeRepnCsharp, MaybeRepnOcaml),
                     MaybeCJCsRepn = ok1(CJCsRepn)
                 else
                     Specs =
                         get_any_errors1(MaybeMaybeRepnC) ++
                         get_any_errors1(MaybeMaybeRepnJava) ++
-                        get_any_errors1(MaybeMaybeRepnCsharp),
+                        get_any_errors1(MaybeMaybeRepnCsharp) ++
+                        get_any_errors1(MaybeMaybeRepnOcaml),
                     MaybeCJCsRepn = error1(Specs)
                 )
             ;
@@ -2047,7 +2056,7 @@ parse_type_repn_foreign_type(VarSet, RepnStr, RepnArgs, RepnContext,
     (
         RepnArgs = [RepnArg1],
         DescPieces = [words("the argument of"), quote(RepnStr)],
-        parse_c_j_cs_repn(DescPieces, VarSet, RepnArg1, MaybeCJCsRepn),
+        parse_c_j_cs_ml_repn(DescPieces, VarSet, RepnArg1, MaybeCJCsRepn),
         (
             MaybeCJCsRepn = ok1(CJCsRepn),
             MaybeRepn = ok1(tcrepn_foreign(CJCsRepn))

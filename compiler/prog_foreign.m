@@ -244,6 +244,9 @@ fim_spec_module_name(FIMSpec) = ModuleName :-
     ;
         Lang = lang_csharp,
         ModuleName = foreign_language_module_name(ForeignImportModule, Lang)
+    ;
+        Lang = lang_ocaml,
+        ModuleName = ForeignImportModule
     ).
 
 fim_spec_module_name_from_module(ModuleFIMSpec, CurrentModule) =
@@ -259,6 +262,10 @@ fim_spec_module_name_from_module(ModuleFIMSpec, CurrentModule) =
             ImportedForeignCodeModuleName1)
     ;
         Lang = lang_java,
+        ImportedForeignCodeModuleName = handle_std_library(CurrentModule,
+            ImportedForeignCodeModuleName1)
+    ;
+        Lang = lang_ocaml,
         ImportedForeignCodeModuleName = handle_std_library(CurrentModule,
             ImportedForeignCodeModuleName1)
     ).
@@ -326,6 +333,9 @@ prefer_foreign_language(_Globals, Target, Lang1, Lang2) = Prefer :-
         % foreign language, we should add it here.
         % XXX Obsolete comment.
         Prefer = no
+    ;
+        Target = target_ocaml,
+        Prefer = no
     ).
 
 %-----------------------------------------------------------------------------%
@@ -341,12 +351,14 @@ all_foreign_languages = Langs :-
 valid_foreign_language(lang_c).
 valid_foreign_language(lang_java).
 valid_foreign_language(lang_csharp).
+valid_foreign_language(lang_ocaml).
 
 %-----------------------------------------------------------------------------%
 
 foreign_type_language(c(_)) = lang_c.
 foreign_type_language(java(_)) = lang_java.
 foreign_type_language(csharp(_)) = lang_csharp.
+foreign_type_language(ocaml(_)) = lang_ocaml.
 
 %-----------------------------------------------------------------------------%
 

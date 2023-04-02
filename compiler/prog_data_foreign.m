@@ -58,12 +58,13 @@
     %
     % C++ is commented out while lang_cplusplus is commented out
     % in the foreign_language type.
-:- type c_j_cs_fims
-    --->    c_j_cs_fims(
+:- type c_j_cs_ml_fims
+    --->    c_j_cs_ml_fims(
                 fim_c           :: set(module_name),
                 % fim_cplusplus :: set(module_name),
                 fim_java        :: set(module_name),
-                fim_csharp      :: set(module_name)
+                fim_csharp      :: set(module_name),
+                fim_ocaml       :: set(module_name)
             ).
 
 :- type fim_spec
@@ -75,29 +76,29 @@
                 fimspec_module_name             :: module_name
             ).
 
-:- func init_foreign_import_modules = c_j_cs_fims.
+:- func init_foreign_import_modules = c_j_cs_ml_fims.
 
 :- pred add_fim(foreign_language::in, module_name::in,
-    c_j_cs_fims::in, c_j_cs_fims::out) is det.
+    c_j_cs_ml_fims::in, c_j_cs_ml_fims::out) is det.
 :- pred add_fim_for_module(module_name::in, foreign_language::in,
-    c_j_cs_fims::in, c_j_cs_fims::out) is det.
+    c_j_cs_ml_fims::in, c_j_cs_ml_fims::out) is det.
 
 :- pred add_fim_spec(fim_spec::in,
-    c_j_cs_fims::in, c_j_cs_fims::out) is det.
+    c_j_cs_ml_fims::in, c_j_cs_ml_fims::out) is det.
 
-:- func get_all_fim_specs(c_j_cs_fims) = set(fim_spec).
+:- func get_all_fim_specs(c_j_cs_ml_fims) = set(fim_spec).
 
-:- func get_all_foreign_import_modules(c_j_cs_fims) = set(module_name).
+:- func get_all_foreign_import_modules(c_j_cs_ml_fims) = set(module_name).
 
-:- func get_lang_fim_specs(c_j_cs_fims, foreign_language) = set(fim_spec).
+:- func get_lang_fim_specs(c_j_cs_ml_fims, foreign_language) = set(fim_spec).
 
-:- func get_lang_fim_modules(c_j_cs_fims, foreign_language)
+:- func get_lang_fim_modules(c_j_cs_ml_fims, foreign_language)
     = set(module_name).
 
 :- implementation.
 
 init_foreign_import_modules =
-    c_j_cs_fims(set.init, set.init, set.init).
+    c_j_cs_ml_fims(set.init, set.init, set.init, set.init).
 
 add_fim(Lang, ModuleName, !FIM) :-
     (
@@ -124,6 +125,14 @@ add_fim(Lang, ModuleName, !FIM) :-
         else
             true
         )
+    ;
+        Lang = lang_ocaml,
+        ModuleNames0 = !.FIM ^ fim_ocaml,
+        ( if set.insert_new(ModuleName, ModuleNames0, ModuleNames) then
+            !FIM ^ fim_ocaml := ModuleNames
+        else
+            true
+        )
     ).
 
 add_fim_for_module(Lang, ModuleName, !FIM) :-
@@ -134,18 +143,20 @@ add_fim_spec(FIMSpec, !FIM) :-
     add_fim(Lang, ModuleName, !FIM).
 
 get_all_fim_specs(FIM) = FIMSpecs :-
-    FIM = c_j_cs_fims(ModuleNamesC, ModuleNamesJava, ModuleNamesCSharp),
+    FIM = c_j_cs_ml_fims(ModuleNamesC, ModuleNamesJava, ModuleNamesCSharp,
+        ModuleNamesOcaml),
     FIMSpecs = set.union_list([
         set.map(make_fim_spec(lang_c), ModuleNamesC),
         set.map(make_fim_spec(lang_java), ModuleNamesJava),
-        set.map(make_fim_spec(lang_csharp), ModuleNamesCSharp)
+        set.map(make_fim_spec(lang_csharp), ModuleNamesCSharp),
+        set.map(make_fim_spec(lang_ocaml), ModuleNamesOcaml)
         ]).
 
 get_all_foreign_import_modules(FIM) = ModuleNames :-
-    FIM = c_j_cs_fims(ModuleNamesC, ModuleNamesJava,
-        ModuleNamesCSharp),
+    FIM = c_j_cs_ml_fims(ModuleNamesC, ModuleNamesJava,
+        ModuleNamesCSharp, ModuleNamesOcaml),
     ModuleNames = set.union_list([ModuleNamesC, ModuleNamesJava,
-        ModuleNamesCSharp]).
+        ModuleNamesCSharp, ModuleNamesOcaml]).
 
 get_lang_fim_specs(FIM, Lang) = ImportInfos :-
     ModuleNames = get_lang_fim_modules(FIM, Lang),
@@ -161,6 +172,9 @@ get_lang_fim_modules(FIM, Lang) = ModuleNames :-
     ;
         Lang = lang_java,
         ModuleNames = FIM ^ fim_java
+    ;
+        Lang = lang_ocaml,
+        ModuleNames = FIM ^ fim_ocaml
     ).
 
 :- func make_fim_spec(foreign_language, module_name) = fim_spec.

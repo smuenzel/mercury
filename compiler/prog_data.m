@@ -1945,6 +1945,7 @@ parse_trace_grade_name("mlds", trace_grade_mlds).
 parse_trace_grade_name("c", trace_grade_c).
 parse_trace_grade_name("csharp", trace_grade_csharp).
 parse_trace_grade_name("java", trace_grade_java).
+parse_trace_grade_name("ocaml", trace_grade_ocaml).
 
 valid_trace_grade_name(GradeName) :-
     parse_trace_grade_name(GradeName, _).
