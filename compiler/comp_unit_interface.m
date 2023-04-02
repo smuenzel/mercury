@@ -255,7 +255,7 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
                 % or to known size ints/uints?
                 DetailsAbstract = abstract_type_general,
                 AbsDefn = EqvDefn0 ^ td_ctor_defn := DetailsAbstract,
-                CSCsMaybeDefn = c_java_csharp_ocaml(no, no, no),
+                CSCsMaybeDefn = c_java_csharp_ocaml(no, no, no, no),
                 StdDefn = std_mer_type_abstract(AbsStatus, AbsDefn,
                     CSCsMaybeDefn),
                 IntDefn = wrap_abstract_type_defn(AbsDefn),
@@ -275,7 +275,7 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
                 DetailsSub = SubDefn0 ^ td_ctor_defn,
                 make_sub_type_abstract(DetailsSub, DetailsAbstract),
                 AbsDefn = SubDefn0 ^ td_ctor_defn := DetailsAbstract,
-                CJCsMaybeDefn = c_java_csharp_ocaml(no, no, no),
+                CJCsMaybeDefn = c_java_csharp_ocaml(no, no, no, no),
                 StdDefn = std_mer_type_abstract(AbsStatus, AbsDefn,
                     CJCsMaybeDefn),
                 IntDefn = wrap_abstract_type_defn(AbsDefn),
@@ -290,7 +290,8 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
                 StdDefn0 = std_mer_type_du_all_plain_constants(DuStatus,
                     DuDefn0, _HeadCtor, _TailCtors, CJCsMaybeDefnOrEnum),
                 CJCsMaybeDefnOrEnum = c_java_csharp_ocaml(MaybeDefnOrEnumC,
-                    MaybeDefnOrEnumJava, MaybeDefnOrEnumCsharp),
+                    MaybeDefnOrEnumJava, MaybeDefnOrEnumCsharp,
+                    MaybeDefnOrEnumOcaml),
                 GetForeignTypeOnly =
                     ( pred(MaybeDorE::in, MaybeFT::out) is det :-
                         (
@@ -310,8 +311,9 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
                 GetForeignTypeOnly(MaybeDefnOrEnumC, MaybeDefnC0),
                 GetForeignTypeOnly(MaybeDefnOrEnumJava, MaybeDefnJava0),
                 GetForeignTypeOnly(MaybeDefnOrEnumCsharp, MaybeDefnCsharp0),
+                GetForeignTypeOnly(MaybeDefnOrEnumOcaml, MaybeDefnOcaml0),
                 CJCsMaybeDefn0 = c_java_csharp_ocaml(MaybeDefnC0, MaybeDefnJava0,
-                    MaybeDefnCsharp0)
+                    MaybeDefnCsharp0, MaybeDefnOcaml0)
             ;
                 StdDefn0 = std_mer_type_du_not_all_plain_constants(DuStatus,
                     DuDefn0, CJCsMaybeDefn0)
@@ -333,7 +335,7 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
                     DuStatus = std_du_type_mer_exported,
                     AbsStatus = std_abs_type_abstract_exported,
                     make_du_type_abstract(DetailsDu, DetailsAbstract),
-                    CJCsMaybeDefn = c_java_csharp_ocaml(no, no, no),
+                    CJCsMaybeDefn = c_java_csharp_ocaml(no, no, no, no),
                     IntCJCsDefns = []
                 ;
                     DuStatus = std_du_type_abstract_exported,
@@ -347,7 +349,7 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
                     % a "where type_is_abstract_enum(N)" clause in the type
                     % declaration.
                     DetailsAbstract = abstract_type_general,
-                    CJCsMaybeDefn = c_java_csharp_ocaml(no, no, no),
+                    CJCsMaybeDefn = c_java_csharp_ocaml(no, no, no, no),
                     IntCJCsDefns = []
                 ),
                 AbsDefn = DuDefn0 ^ td_ctor_defn := DetailsAbstract,
@@ -369,7 +371,7 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
                     CJCsMaybeDefn = CJCsMaybeDefn0
                 ;
                     AbsStatus = std_abs_type_abstract_exported,
-                    CJCsMaybeDefn = c_java_csharp_ocaml(no, no, no)
+                    CJCsMaybeDefn = c_java_csharp_ocaml(no, no, no, no)
                 ),
                 get_c_j_cs_ml_defns(CJCsMaybeDefn, CJCsDefns),
                 IntCJCsDefns = list.map(wrap_foreign_type_defn, CJCsDefns),
@@ -389,7 +391,8 @@ make_type_ctor_checked_defn_abstract_for_int3(TypeCtor, CheckedTypeDefn0,
     list(item_type_defn_info_foreign)::out) is det.
 
 get_c_j_cs_ml_defns(CJCsMaybeDefn, CJCsDefns) :-
-    CJCsMaybeDefn = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJava, MaybeDefnCsharp),
+    CJCsMaybeDefn = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJava,
+        MaybeDefnCsharp, MaybeDefnOcaml),
     MaybeToList =
         ( pred(MaybeDefn::in, Defns::out) is det :-
             (
@@ -403,7 +406,8 @@ get_c_j_cs_ml_defns(CJCsMaybeDefn, CJCsDefns) :-
     MaybeToList(MaybeDefnC, DefnsC),
     MaybeToList(MaybeDefnJava, DefnsJava),
     MaybeToList(MaybeDefnCsharp, DefnsCsharp),
-    CJCsDefns = DefnsC ++ DefnsJava ++ DefnsCsharp.
+    MaybeToList(MaybeDefnOcaml, DefnsOcaml),
+    CJCsDefns = DefnsC ++ DefnsJava ++ DefnsCsharp ++ DefnsOcaml.
 
 :- pred make_inst_ctor_checked_defn_abstract_for_int3(
     inst_ctor::in, inst_ctor_checked_defn::in,
@@ -1764,7 +1768,7 @@ hide_type_ctor_checked_defn_std_imp_details_for_int1(BothTypesMap,
                 AbstractStatus = std_abs_type_abstract_exported,
                 AbstractDefn = EqvDefn ^ td_ctor_defn
                     := abstract_type_general,
-                MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no),
+                MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no, no),
                 StdTypeDefn = std_mer_type_abstract(AbstractStatus,
                     AbstractDefn, MaybeCJCsDefn),
                 SrcDefnsStd = src_defns_std(
@@ -1796,7 +1800,7 @@ hide_type_ctor_checked_defn_std_imp_details_for_int1(BothTypesMap,
                 SrcImpDefns = []
             ),
             AbstractStatus = std_abs_type_abstract_exported,
-            MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no),
+            MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no, no),
             StdTypeDefn = std_mer_type_abstract(AbstractStatus,
                 AbstractDefn, MaybeCJCsDefn),
             SrcDefnsStd = src_defns_std(SrcIntDefns0, SrcImpDefns, []),
@@ -1820,7 +1824,7 @@ hide_type_ctor_checked_defn_std_imp_details_for_int1(BothTypesMap,
                 % the StdTypeDefn part.
                 AbstractDefn = make_subtype_defn_abstract(SubDefn),
                 AbstractStatus = std_abs_type_all_private,
-                MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no),
+                MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no, no),
                 StdTypeDefn = std_mer_type_abstract(AbstractStatus,
                     AbstractDefn, MaybeCJCsDefn),
                 SrcImpDefns = [wrap_abstract_type_defn(AbstractDefn)],
@@ -1902,7 +1906,7 @@ hide_type_ctor_checked_defn_std_imp_details_for_int1(BothTypesMap,
             % NeededImpTypeCtors.
             delete_any_foreign_enum_from_extras(Extras0, MaybeCJCsDefn1),
             ( if set.member(TypeCtor, NeededImpTypeCtors) then
-                ( if MaybeCJCsDefn1 = c_java_csharp_ocaml(no, no, no) then
+                ( if MaybeCJCsDefn1 = c_java_csharp_ocaml(no, no, no, no) then
                     % After deleting any foreign enum items in the
                     % implementation section, this type has only a du Mercury
                     % definition left there. Making it abstract preserves
@@ -2001,7 +2005,7 @@ hide_type_ctor_checked_defn_std_imp_details_for_int1(BothTypesMap,
                     SrcImpDefns = []
                 ),
                 AbstractStatus = std_abs_type_abstract_exported,
-                MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no),
+                MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no, no),
                 % XXX Should we use SrcIntDefns?
                 % SrcIntDefns = [wrap_abstract_type_defn(AbstractDefn)],
                 StdTypeDefn = std_mer_type_abstract(AbstractStatus,
@@ -2021,7 +2025,7 @@ hide_type_ctor_checked_defn_std_imp_details_for_int1(BothTypesMap,
             % NeededImpTypeCtors.
             delete_any_foreign_enum_from_extras(Extras0, MaybeCJCsDefn1),
             ( if set.member(TypeCtor, NeededImpTypeCtors) then
-                ( if MaybeCJCsDefn1 = c_java_csharp_ocaml(no, no, no) then
+                ( if MaybeCJCsDefn1 = c_java_csharp_ocaml(no, no, no, no) then
                     % This type has only a du Mercury definition in the
                     % implementation section. Making it abstract
                     % preserves old behavior.
@@ -2088,7 +2092,7 @@ hide_type_ctor_checked_defn_std_imp_details_for_int1(BothTypesMap,
                 map.det_insert(TypeCtor, TypeCtorCheckedDefn0,
                     !TypeCtorCheckedMap)
             else
-                MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no),
+                MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no, no),
                 StdTypeDefn = std_mer_type_abstract(AbstractStatus,
                     AbstractDefn, MaybeCJCsDefn),
                 SrcDefnsStd = src_defns_std(SrcIntDefns0, [], []),
@@ -2581,25 +2585,28 @@ delete_uc_preds_from_du_type_defn(ItemTypeDefn0, ItemTypeDefn) :-
 delete_uc_preds_from_c_j_cs_ml_maybe_defn_or_enum(CJCsMaybeDefnOrEnum0,
         CJCsMaybeDefnOrEnum) :-
     CJCsMaybeDefnOrEnum0 = c_java_csharp_ocaml(MaybeDefnOrEnumC0, MaybeDefnOrEnumJ0,
-        MaybeDefnOrEnumCs0),
+        MaybeDefnOrEnumCs0, MaybeDefnOrEnumMl0),
     delete_uc_preds_from_maybe_foreign_type_defn_or_enum(MaybeDefnOrEnumC0,
         MaybeDefnOrEnumC),
     delete_uc_preds_from_maybe_foreign_type_defn_or_enum(MaybeDefnOrEnumJ0,
         MaybeDefnOrEnumJ),
     delete_uc_preds_from_maybe_foreign_type_defn_or_enum(MaybeDefnOrEnumCs0,
         MaybeDefnOrEnumCs),
+    delete_uc_preds_from_maybe_foreign_type_defn_or_enum(MaybeDefnOrEnumMl0,
+        MaybeDefnOrEnumMl),
     CJCsMaybeDefnOrEnum = c_java_csharp_ocaml(MaybeDefnOrEnumC,
-        MaybeDefnOrEnumJ, MaybeDefnOrEnumCs).
+        MaybeDefnOrEnumJ, MaybeDefnOrEnumCs, MaybeDefnOrEnumMl).
 
 :- pred delete_uc_preds_from_c_j_cs_ml_maybe_defn(
     c_j_cs_ml_maybe_defn::in, c_j_cs_ml_maybe_defn::out) is det.
 
 delete_uc_preds_from_c_j_cs_ml_maybe_defn(CJCsMaybeDefn0, CJCsMaybeDefn) :-
-    CJCsMaybeDefn0 = c_java_csharp_ocaml(MaybeDefnC0, MaybeDefnJ0, MaybeDefnCs0),
+    CJCsMaybeDefn0 = c_java_csharp_ocaml(MaybeDefnC0, MaybeDefnJ0, MaybeDefnCs0, MaybeDefnMl0),
     delete_uc_preds_from_maybe_foreign_type_defn(MaybeDefnC0, MaybeDefnC),
     delete_uc_preds_from_maybe_foreign_type_defn(MaybeDefnJ0, MaybeDefnJ),
     delete_uc_preds_from_maybe_foreign_type_defn(MaybeDefnCs0, MaybeDefnCs),
-    CJCsMaybeDefn = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJ, MaybeDefnCs).
+    delete_uc_preds_from_maybe_foreign_type_defn(MaybeDefnMl0, MaybeDefnMl),
+    CJCsMaybeDefn = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJ, MaybeDefnCs, MaybeDefnMl).
 
 :- pred delete_uc_preds_from_maybe_foreign_type_defn_or_enum(
     maybe(foreign_type_or_enum)::in, maybe(foreign_type_or_enum)::out) is det.
@@ -2805,12 +2812,14 @@ make_instance_abstract(Instance) =
     c_j_cs_ml_maybe_defn_or_enum::out) is det.
 
 wrap_cjcs_foreign_type_no_enums(CJCsMaybeDefn, CJCsMaybeDefnOrEnum) :-
-    CJCsMaybeDefn = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJava, MaybeDefnCsharp),
+    CJCsMaybeDefn = c_java_csharp_ocaml(MaybeDefnC, MaybeDefnJava,
+        MaybeDefnCsharp, MaybeDefnOcaml),
     wrap_cjcs_foreign_type_no_enum(MaybeDefnC, MaybeDefnOrEnumC),
     wrap_cjcs_foreign_type_no_enum(MaybeDefnJava, MaybeDefnOrEnumJava),
     wrap_cjcs_foreign_type_no_enum(MaybeDefnCsharp, MaybeDefnOrEnumCsharp),
+    wrap_cjcs_foreign_type_no_enum(MaybeDefnOcaml, MaybeDefnOrEnumOcaml),
     CJCsMaybeDefnOrEnum = c_java_csharp_ocaml(MaybeDefnOrEnumC, MaybeDefnOrEnumJava,
-        MaybeDefnOrEnumCsharp).
+        MaybeDefnOrEnumCsharp, MaybeDefnOrEnumOcaml).
 
 :- pred wrap_cjcs_foreign_type_no_enum(maybe(item_type_defn_info_foreign)::in,
     maybe(foreign_type_or_enum)::out) is det.
@@ -2837,19 +2846,22 @@ delete_any_foreign_type_defn_from_extras(Extras0, Extras) :-
     (
         Extras0 = extras_enum(HeadCtor, TailCtors, MaybeCJCsDefnOrEnum0),
         MaybeCJCsDefnOrEnum0 = c_java_csharp_ocaml(MaybeDefnOrEnumC0,
-            MaybeDefnOrEnumJava0, MaybeDefnOrEnumCsharp0),
+            MaybeDefnOrEnumJava0, MaybeDefnOrEnumCsharp0,
+            MaybeDefnOrEnumOcaml0),
         delete_any_foreign_type_defn(MaybeDefnOrEnumC0,
             MaybeDefnOrEnumC),
         delete_any_foreign_type_defn(MaybeDefnOrEnumJava0,
             MaybeDefnOrEnumJava),
         delete_any_foreign_type_defn(MaybeDefnOrEnumCsharp0,
             MaybeDefnOrEnumCsharp),
+        delete_any_foreign_type_defn(MaybeDefnOrEnumOcaml0,
+            MaybeDefnOrEnumOcaml),
         MaybeCJCsDefnOrEnum = c_java_csharp_ocaml(MaybeDefnOrEnumC,
-            MaybeDefnOrEnumJava, MaybeDefnOrEnumCsharp),
+            MaybeDefnOrEnumJava, MaybeDefnOrEnumCsharp, MaybeDefnOrEnumOcaml),
         Extras = extras_enum(HeadCtor, TailCtors, MaybeCJCsDefnOrEnum)
     ;
         Extras0 = extras_non_enum(_MaybeCJCsDefn0),
-        MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no),
+        MaybeCJCsDefn = c_java_csharp_ocaml(no, no, no, no),
         Extras = extras_non_enum(MaybeCJCsDefn)
     ).
 
@@ -2878,12 +2890,13 @@ delete_any_foreign_enum_from_extras(Extras0, MaybeCJCsDefn) :-
     (
         Extras0 = extras_enum(_HeadCtor, _TailCtors, MaybeCJCsDefnOrEnum0),
         MaybeCJCsDefnOrEnum0 = c_java_csharp_ocaml(MaybeDefnOrEnumC0,
-            MaybeDefnOrEnumJava0, MaybeDefnOrEnumCsharp0),
+            MaybeDefnOrEnumJava0, MaybeDefnOrEnumCsharp0, MaybeDefnOrEnumOcaml0),
         delete_any_foreign_enum(MaybeDefnOrEnumC0, MaybeDefnC),
         delete_any_foreign_enum(MaybeDefnOrEnumJava0, MaybeDefnJava),
         delete_any_foreign_enum(MaybeDefnOrEnumCsharp0, MaybeDefnCsharp),
+        delete_any_foreign_enum(MaybeDefnOrEnumOcaml0, MaybeDefnOcaml),
         MaybeCJCsDefn = c_java_csharp_ocaml(MaybeDefnC,
-            MaybeDefnJava, MaybeDefnCsharp)
+            MaybeDefnJava, MaybeDefnCsharp, MaybeDefnOcaml)
     ;
         Extras0 = extras_non_enum(MaybeCJCsDefn)
     ).
@@ -2926,6 +2939,7 @@ record_foreign_lang_in_type_defn(TypeDefnInfo, !Langs) :-
         ( LangType = c(_), Lang = lang_c
         ; LangType = java(_), Lang = lang_java
         ; LangType = csharp(_), Lang = lang_csharp
+        ; LangType = ocaml(_), Lang = lang_ocaml
         ),
         set.insert(Lang, !Langs)
     ).
