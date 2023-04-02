@@ -1603,14 +1603,15 @@ add_type_defn_to_map(TypeDefnInfo, !TypeDefnMap) :-
     TypeCtor = type_ctor(SymName, Arity),
     some [!AbsSolverDefns, !SolverDefns,
         !AbsStdDefns, !EqvDefns, !DuDefns, !SubDefns,
-        !ForeignDefnsC, !ForeignDefnsJava, !ForeignDefnsCsharp]
+        !ForeignDefnsC, !ForeignDefnsJava, !ForeignDefnsCsharp,
+        !ForeignDefnsOcaml]
     (
         ( if map.search(!.TypeDefnMap, TypeCtor, AllDefns0) then
             AllDefns0 = type_ctor_all_defns(
                 !:AbsSolverDefns, !:SolverDefns,
                 !:AbsStdDefns, !:EqvDefns, !:DuDefns, !:SubDefns,
                 c_java_csharp_ocaml(!:ForeignDefnsC, !:ForeignDefnsJava,
-                    !:ForeignDefnsCsharp))
+                    !:ForeignDefnsCsharp, !:ForeignDefnsOcaml))
         else
             !:AbsSolverDefns = [],
             !:SolverDefns = [],
@@ -1621,7 +1622,8 @@ add_type_defn_to_map(TypeDefnInfo, !TypeDefnMap) :-
             !:SubDefns = [],
             !:ForeignDefnsC = [],
             !:ForeignDefnsJava = [],
-            !:ForeignDefnsCsharp = []
+            !:ForeignDefnsCsharp = [],
+            !:ForeignDefnsOcaml = []
         ),
         (
             TypeDefn = parse_tree_abstract_type(DetailsAbs),
@@ -1668,12 +1670,16 @@ add_type_defn_to_map(TypeDefnInfo, !TypeDefnMap) :-
                 LangType = csharp(_),
                 !:ForeignDefnsCsharp = !.ForeignDefnsCsharp ++
                     [ForeignDefnInfo]
+            ;
+                LangType = ocaml(_),
+                !:ForeignDefnsOcaml = !.ForeignDefnsOcaml ++
+                    [ForeignDefnInfo]
             )
         ),
         AllDefns = type_ctor_all_defns(!.AbsSolverDefns, !.SolverDefns,
             !.AbsStdDefns, !.EqvDefns, !.DuDefns, !.SubDefns,
             c_java_csharp_ocaml(!.ForeignDefnsC, !.ForeignDefnsJava,
-                !.ForeignDefnsCsharp))
+                !.ForeignDefnsCsharp, !.ForeignDefnsOcaml))
     ),
     map.set(TypeCtor, AllDefns, !TypeDefnMap).
 
@@ -1786,15 +1792,18 @@ type_ctor_foreign_enum_items_to_map(ForeignEnums) = ForeignEnumMap :-
 
 add_foreign_enum_item_to_map(ForeignEnumInfo, !ForeignEnumMap) :-
     ForeignEnumInfo = item_foreign_enum_info(Lang, TypeCtor, _Values, _, _),
-    some [!ForeignEnumsC, !ForeignEnumsJava, !ForeignEnumsCsharp]
+    some [!ForeignEnumsC, !ForeignEnumsJava, !ForeignEnumsCsharp,
+        !ForeignEnumsOcaml]
     (
         ( if map.search(!.ForeignEnumMap, TypeCtor, AllEnums0) then
             AllEnums0 = c_java_csharp_ocaml(!:ForeignEnumsC,
-                !:ForeignEnumsJava, !:ForeignEnumsCsharp)
+                !:ForeignEnumsJava, !:ForeignEnumsCsharp,
+                !:ForeignEnumsOcaml)
         else
             !:ForeignEnumsC = [],
             !:ForeignEnumsJava = [],
-            !:ForeignEnumsCsharp = []
+            !:ForeignEnumsCsharp = [],
+            !:ForeignEnumsOcaml = []
         ),
         (
             Lang = lang_c,
@@ -1805,9 +1814,12 @@ add_foreign_enum_item_to_map(ForeignEnumInfo, !ForeignEnumMap) :-
         ;
             Lang = lang_csharp,
             !:ForeignEnumsCsharp = !.ForeignEnumsCsharp ++ [ForeignEnumInfo]
+        ;
+            Lang = lang_ocaml,
+            !:ForeignEnumsOcaml = !.ForeignEnumsOcaml ++ [ForeignEnumInfo]
         ),
         AllEnums = c_java_csharp_ocaml(!.ForeignEnumsC,
-            !.ForeignEnumsJava, !.ForeignEnumsCsharp),
+            !.ForeignEnumsJava, !.ForeignEnumsCsharp, !.ForeignEnumsOcaml),
         map.set(TypeCtor, AllEnums, !ForeignEnumMap)
     ).
 
@@ -1825,7 +1837,7 @@ accumulate_type_ctor_defns(CtorAllDefns, !TypeDefns) :-
     CtorAllDefns = type_ctor_all_defns(AbstractSolverDefns, SolverDefns,
         AbstractStdDefns, EqvDefns, DuDefns, SubDefns, CJCsEDefns),
     CJCsEDefns = c_java_csharp_ocaml(ForeignDefnsC, ForeignDefnsJava,
-        ForeignDefnsCsharp),
+        ForeignDefnsCsharp, ForeignDefnsOcaml),
     !:TypeDefns = !.TypeDefns ++ cord.from_list(
         list.map(wrap_abstract_type_defn, at_most_one(AbstractSolverDefns)) ++
         list.map(wrap_solver_type_defn, SolverDefns) ++
@@ -1835,7 +1847,9 @@ accumulate_type_ctor_defns(CtorAllDefns, !TypeDefns) :-
         list.map(wrap_sub_type_defn, SubDefns) ++
         list.map(wrap_foreign_type_defn, ForeignDefnsC) ++
         list.map(wrap_foreign_type_defn, ForeignDefnsJava) ++
-        list.map(wrap_foreign_type_defn, ForeignDefnsCsharp)).
+        list.map(wrap_foreign_type_defn, ForeignDefnsCsharp) ++
+        list.map(wrap_foreign_type_defn, ForeignDefnsOcaml)
+        ).
 
 :- func at_most_one(list(T)) = list(T).
 
