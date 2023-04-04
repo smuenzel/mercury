@@ -4071,6 +4071,9 @@ is_foreign_type_body_for_target(ForeignType, Target, Assertions) :-
     ;
         Target = target_csharp,
         ForeignType ^ csharp = yes(type_details_foreign(_, _, Assertions))
+    ;
+        Target = target_ocaml,
+        ForeignType ^ ocaml = yes(type_details_foreign(_, _, Assertions))
     ).
 
 %---------------------------------------------------------------------------%

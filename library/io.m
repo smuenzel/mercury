@@ -149,6 +149,7 @@
     [can_pass_as_mercury_type]).
 :- pragma foreign_type("C#", system_error, "System.Exception").
 :- pragma foreign_type(java, system_error, "java.lang.Exception").
+:- pragma foreign_type("OCaml", system_error, "Exception.t").
 
     % whence denotes the base for a seek operation.
     %   set - seek relative to the start of the file
@@ -2368,6 +2369,9 @@
     [can_pass_as_mercury_type])
     where equality is io_state_equal, comparison is io_state_compare.
 :- pragma foreign_type("Java", io.state, "java.lang.Object",
+    [can_pass_as_mercury_type])
+    where equality is io_state_equal, comparison is io_state_compare.
+:- pragma foreign_type("OCaml", io.state, "int",
     [can_pass_as_mercury_type])
     where equality is io_state_equal, comparison is io_state_compare.
 

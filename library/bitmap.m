@@ -2191,6 +2191,8 @@ import jmercury.runtime.MercuryBitmap;
     where equality is bitmap_equal, comparison is bitmap_compare.
 :- pragma foreign_type("C#", bitmap, "mercury.runtime.MercuryBitmap")
     where equality is bitmap_equal, comparison is bitmap_compare.
+:- pragma foreign_type("OCaml", bitmap, "Obj.t")
+    where equality is bitmap_equal, comparison is bitmap_compare.
 
 :- pred bitmap_equal(bitmap::in, bitmap::in) is semidet.
 :- pragma terminates(pred(bitmap_equal/2)).

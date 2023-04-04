@@ -969,6 +969,11 @@
     where equality is array.array_equal,
     comparison is array.array_compare.
 
+% FIXME: allow foreign_type to take parameters
+:- pragma foreign_type("OCaml",  array(T), "Obj.t array")
+    where equality is array.array_equal,
+    comparison is array.array_compare.
+
 %---------------------------------------------------------------------------%
 
 :- pred bounds_checks is semidet.
