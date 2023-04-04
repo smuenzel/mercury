@@ -731,7 +731,7 @@ mercury_output_c_j_cs_ml_repn_or_enum(Stream, TypeRepnFor, Indent,
     else
         (
             TypeRepnFor = type_repn_for_machines,
-            io.write_string(Stream, " c_j_cs_ml", !IO),
+            io.write_string(Stream, " c_j_cs_ml(", !IO),
             mercury_output_maybe_enum_foreign_repn(Stream, TypeRepnFor,
                 Indent1, MaybeRepnOrEnumC, !IO),
             io.write_string(Stream, ", ", !IO),
@@ -746,7 +746,7 @@ mercury_output_c_j_cs_ml_repn_or_enum(Stream, TypeRepnFor, Indent,
             io.write_string(Stream, ")", !IO)
         ;
             TypeRepnFor = type_repn_for_humans,
-            io.format(Stream, "\n%sc_j_cs_ml\n", [s(I)], !IO),
+            io.format(Stream, "\n%sc_j_cs_ml(\n", [s(I)], !IO),
             mercury_output_maybe_enum_foreign_repn(Stream, TypeRepnFor,
                 Indent1, MaybeRepnOrEnumC, !IO),
             io.write_string(Stream, ",\n", !IO),
@@ -786,7 +786,7 @@ mercury_output_c_j_cs_ml_repn(Stream, TypeRepnFor, Indent, MaybeCJCsRepn, !IO) :
         Indent1 = Indent + 1,
         (
             TypeRepnFor = type_repn_for_machines,
-            io.write_string(Stream, " c_j_cs_ml", !IO),
+            io.write_string(Stream, " c_j_cs_ml(", !IO),
             mercury_output_maybe_foreign_type_repn(Stream, TypeRepnFor,
                 Indent1, MaybeRepnC, !IO),
             io.write_string(Stream, ", ", !IO),
@@ -802,7 +802,7 @@ mercury_output_c_j_cs_ml_repn(Stream, TypeRepnFor, Indent, MaybeCJCsRepn, !IO) :
         ;
             TypeRepnFor = type_repn_for_humans,
             I = indent(Indent),
-            io.format(Stream, "%sc_j_cs_ml\n", [s(I)], !IO),
+            io.format(Stream, "%sc_j_cs_ml(\n", [s(I)], !IO),
             mercury_output_maybe_foreign_type_repn(Stream, TypeRepnFor,
                 Indent1, MaybeRepnC, !IO),
             io.write_string(Stream, ",\n", !IO),
