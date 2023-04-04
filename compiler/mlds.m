@@ -1632,7 +1632,8 @@
 :- type mlds_target_lang
     --->    ml_target_c
     ;       ml_target_csharp
-    ;       ml_target_java.
+    ;       ml_target_java
+    ;       ml_target_ocaml.
 
     % This is just a random selection of possible languages
     % that we might want to target later ...

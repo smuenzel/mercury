@@ -217,6 +217,7 @@ ml_gen_disj(Disjuncts, GoalInfo, CodeModel, Context, Stmts, !Info) :-
 allow_lookup_disj(ml_target_c) = yes.
 allow_lookup_disj(ml_target_csharp) = yes.
 allow_lookup_disj(ml_target_java) = yes.
+allow_lookup_disj(ml_target_ocaml) = yes.
 
 %---------------------------------------------------------------------------%
 

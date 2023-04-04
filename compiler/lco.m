@@ -1478,6 +1478,7 @@ lco_transform_variant_proc(VariantMap, AddrOutArgs, ProcInfo,
     ;
         ( Target = target_java
         ; Target = target_csharp
+        ; Target = target_ocaml
         ),
         recompute_instmap_delta_proc(no_recomp_atomics,
             !VariantProcInfo, !ModuleInfo)
@@ -1865,6 +1866,7 @@ lco_transform_variant_plain_call(ModuleInfo, Transforms, VariantMap, VarToAddr,
             ;
                 ( Target = target_java
                 ; Target = target_csharp
+                ; Target = target_ocaml
                 ),
                 % The partially instantiated cells will be ground
                 % after the call.

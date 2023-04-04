@@ -1203,7 +1203,8 @@ gather_opt_export_types_in_type_defn(TypeCtor, TypeDefn0, !IntermodInfo) :-
 
 resolve_foreign_type_body_overloading(ModuleInfo, TypeCtor,
         ForeignTypeBody0, ForeignTypeBody, !IntermodInfo) :-
-    ForeignTypeBody0 = foreign_type_body(MaybeC0, MaybeJava0, MaybeCSharp0),
+    ForeignTypeBody0 = foreign_type_body(MaybeC0, MaybeJava0,
+        MaybeCSharp0, MaybeOcaml0),
     module_info_get_globals(ModuleInfo, Globals),
     globals.get_target(Globals, Target),
 
@@ -1221,6 +1222,7 @@ resolve_foreign_type_body_overloading(ModuleInfo, TypeCtor,
     ;
         ( Target = target_csharp
         ; Target = target_java
+        ; Target = target_ocaml
         ),
         MaybeC = MaybeC0
     ),
@@ -1231,6 +1233,7 @@ resolve_foreign_type_body_overloading(ModuleInfo, TypeCtor,
     ;
         ( Target = target_c
         ; Target = target_java
+        ; Target = target_ocaml
         ),
         MaybeCSharp = MaybeCSharp0
     ),
@@ -1241,10 +1244,23 @@ resolve_foreign_type_body_overloading(ModuleInfo, TypeCtor,
     ;
         ( Target = target_c
         ; Target = target_csharp
+        ; Target = target_ocaml
         ),
         MaybeJava = MaybeJava0
     ),
-    ForeignTypeBody = foreign_type_body(MaybeC, MaybeJava, MaybeCSharp).
+    (
+        Target = target_ocaml,
+        resolve_foreign_type_body_overloading_2(ModuleInfo, TypeCtor,
+            MaybeOcaml0, MaybeOcaml, !IntermodInfo)
+    ;
+        ( Target = target_c
+        ; Target = target_csharp
+        ; Target = target_java
+        ),
+        MaybeOcaml = MaybeOcaml0
+    ),
+    ForeignTypeBody = foreign_type_body(MaybeC, MaybeJava,
+        MaybeCSharp, MaybeOcaml).
 
 :- pred resolve_foreign_type_body_overloading_2(module_info::in, type_ctor::in,
     foreign_type_lang_body(T)::in, foreign_type_lang_body(T)::out,
@@ -1415,7 +1431,7 @@ write_opt_file_initial_body(Stream, IntermodInfo, ParseTreePlainOpt, !IO) :-
 
     (
         NeedFIMs = do_need_foreign_import_modules,
-        module_info_get_c_j_cs_fims(ModuleInfo, CJCsFIMs),
+        module_info_get_c_j_cs_ml_fims(ModuleInfo, CJCsFIMs),
         FIMSpecsSet = get_all_fim_specs(CJCsFIMs),
         FIMSpecs = set.to_sorted_list(FIMSpecsSet)
     ;
@@ -1589,13 +1605,16 @@ intermod_gather_type(TypeCtor - TypeDefn,
         MaybeForeignTypeBody = no
     ;
         MaybeForeignTypeBody = yes(ForeignTypeBody),
-        ForeignTypeBody = foreign_type_body(MaybeC, MaybeJava, MaybeCsharp),
+        ForeignTypeBody = foreign_type_body(MaybeC, MaybeJava,
+            MaybeCsharp, MaybeOcaml),
         maybe_acc_foreign_type_defn_info(TypeSymName, TypeParams, TVarSet,
             Context, (func(FT) = c(FT)), MaybeC, !TypeDefnsCord),
         maybe_acc_foreign_type_defn_info(TypeSymName, TypeParams, TVarSet,
             Context, (func(FT) = java(FT)), MaybeJava, !TypeDefnsCord),
         maybe_acc_foreign_type_defn_info(TypeSymName, TypeParams, TVarSet,
-            Context, (func(FT) = csharp(FT)), MaybeCsharp, !TypeDefnsCord)
+            Context, (func(FT) = csharp(FT)), MaybeCsharp, !TypeDefnsCord),
+        maybe_acc_foreign_type_defn_info(TypeSymName, TypeParams, TVarSet,
+            Context, (func(FT) = ocaml(FT)), MaybeOcaml, !TypeDefnsCord)
     ),
     ( if
         Body = hlds_du_type(type_body_du(_, _, _, MaybeRepnB, _)),

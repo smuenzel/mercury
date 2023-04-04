@@ -156,6 +156,7 @@ ml_gen_init_global_data(ModuleInfo, Target, GlobalData) :-
         ( Target = ml_target_c
         ; Target = ml_target_csharp
         ; Target = ml_target_java
+        ; Target = ml_target_ocaml
         ),
         UseCommonCells = use_common_cells
     ),

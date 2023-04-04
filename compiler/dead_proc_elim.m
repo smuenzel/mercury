@@ -1484,12 +1484,14 @@ dead_pred_initialize_referred_preds(ModuleInfo, _TypeCtor - TypeDefn,
             !NeededPreds)
     ;
         TypeDefnBody = hlds_foreign_type(ForeignTypeBody),
-        ForeignTypeBody = foreign_type_body(C, Java, CSharp),
+        ForeignTypeBody = foreign_type_body(C, Java, CSharp, Ocaml),
         dead_pred_initialize_forein_type_lang_body(ModuleInfo, C,
             !NeededPreds),
         dead_pred_initialize_forein_type_lang_body(ModuleInfo, Java,
             !NeededPreds),
         dead_pred_initialize_forein_type_lang_body(ModuleInfo, CSharp,
+            !NeededPreds),
+        dead_pred_initialize_forein_type_lang_body(ModuleInfo, Ocaml,
             !NeededPreds)
     ;
         TypeDefnBody = hlds_solver_type(DetailsSolver),

@@ -925,6 +925,7 @@ mlds_output_stmt_atomic(Opts, Stream, Indent, Stmt, !IO) :-
         ;
             ( TargetLang = ml_target_csharp
             ; TargetLang = ml_target_java
+            ; TargetLang = ml_target_ocaml
             ),
             sorry($pred, "inline_target_code only works for language C")
         )

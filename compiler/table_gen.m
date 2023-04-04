@@ -423,6 +423,7 @@ find_grade_problems_for_tabling(ModuleInfo, PredId, ProcId, TabledMethod,
     ;
         ( Target = target_csharp
         ; Target = target_java
+        ; Target = target_ocaml
         ),
         general_cannot_table_reason_spec(ModuleInfo, PredId, ProcId,
             TabledMethod, gen_reason_non_c_backend, TargetSpec),

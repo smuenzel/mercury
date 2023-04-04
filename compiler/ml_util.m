@@ -964,6 +964,7 @@ mlds_target_high_level_data(Target) = HighLevelData :-
     ;
         ( Target = ml_target_java
         ; Target = ml_target_csharp
+        ; Target = ml_target_ocaml
         ),
         HighLevelData = yes
     ).

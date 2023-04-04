@@ -297,6 +297,7 @@ ml_gen_hld_enum_type(Target, TypeCtor, TypeDefn, CtorRepns,
     ;
         ( Target = ml_target_c
         ; Target = ml_target_csharp
+        ; Target = ml_target_ocaml
         ),
         Inherits = inherits_nothing,
         Implements = []
@@ -473,6 +474,7 @@ ml_gen_hld_du_type(ModuleInfo, Target, TypeCtor, TypeDefn, CtorRepns,
     ;
         ( Target = ml_target_c
         ; Target = ml_target_csharp
+        ; Target = ml_target_ocaml
         ),
         Implements = []
     ),
@@ -709,6 +711,7 @@ ml_gen_hld_du_ctor_member(ModuleInfo, Target, BaseClassId, BaseClassQualifier,
 target_uses_empty_base_classes(ml_target_c) = no.
 target_uses_empty_base_classes(ml_target_csharp) = no.
 target_uses_empty_base_classes(ml_target_java) = yes.
+target_uses_empty_base_classes(ml_target_ocaml) = no.
 
 ml_gen_constructor_function(Target, BaseClassId, CtorClassId, ClassQualifier,
         SecondaryTagClassId, MaybeTag, FieldInfos, Context) = CtorDefn :-
@@ -1007,6 +1010,7 @@ ml_remote_args_tag_uses_base_class(RemoteArgsTagInfo) = UsesBaseClass :-
 ml_target_uses_constructors(ml_target_c) = no.
 ml_target_uses_constructors(ml_target_csharp) = yes.
 ml_target_uses_constructors(ml_target_java) = yes.
+ml_target_uses_constructors(ml_target_ocaml) = yes.
 % NOTE The information here is repeated in target_uses_constructors in
 % du_type_layout.m; any changes here will require corresponding changes there.
 

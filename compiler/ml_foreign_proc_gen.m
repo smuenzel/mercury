@@ -157,6 +157,7 @@ ml_gen_foreign_proc(CodeModel, Attributes, PredId, ProcId, Args, ExtraArgs,
         ;
             ( Target = ml_target_c
             ; Target = ml_target_java
+            ; Target = ml_target_ocaml
             ),
             unexpected($pred,
                 "C# foreign code not supported for compilation target")

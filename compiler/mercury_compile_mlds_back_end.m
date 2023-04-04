@@ -135,6 +135,9 @@ mlds_backend(ProgressStream, ErrorStream, !HLDS, !:MLDS, !:Specs,
     ;
         Target = target_csharp,
         MLDS_Target = ml_target_csharp
+    ;
+        Target = target_ocaml,
+        MLDS_Target = ml_target_ocaml
     ),
     maybe_write_string(ProgressStream, Verbose,
         "% Converting HLDS to MLDS...\n", !IO),
@@ -260,6 +263,7 @@ maybe_add_trail_ops(ProgressStream, Verbose, Stats, !HLDS, !IO) :-
             %
             ( Target = target_csharp
             ; Target = target_java
+            ; Target = target_ocaml
             ),
             GenerateInline = do_not_gen_trail_ops_inline
         ),

@@ -347,6 +347,7 @@ rename_class_names_in_atomic(Renaming, !Stmt) :-
         ;
             ( Lang = ml_target_c
             ; Lang = ml_target_csharp
+            ; Lang = ml_target_ocaml
             )
         )
     ;

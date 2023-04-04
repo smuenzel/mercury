@@ -660,6 +660,10 @@ ml_gen_static_vector_type(MLDS_ModuleName, Context, Target, ArgTypes,
             ;
                 Target = ml_target_csharp,
                 ClassKind = mlds_struct
+            ;
+            % FIXME: This probably makes no sense
+                Target = ml_target_ocaml,
+                ClassKind = mlds_struct
             ),
             CtorDefn = ml_gen_constructor_function(Target, StructClassId,
                 StructClassId, MLDS_ModuleName, StructClassId, no, FieldInfos,

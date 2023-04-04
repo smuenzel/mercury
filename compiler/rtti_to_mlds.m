@@ -518,6 +518,7 @@ gen_type_info_defn(ModuleInfo, Target, RttiTypeInfo, Name, RttiId,
             ;
                 ( Target = ml_target_c
                 ; Target = ml_target_csharp
+                ; Target = ml_target_ocaml
                 ),
                 InitializerArgs = [
                     InitRttiName,

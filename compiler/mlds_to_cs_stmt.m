@@ -771,6 +771,7 @@ output_atomic_stmt_for_csharp(Info, Stream, Indent, AtomicStmt,
         ;
             ( TargetLang = ml_target_c
             ; TargetLang = ml_target_java
+            ; TargetLang = ml_target_ocaml
             ),
             unexpected($pred, "inline_target_code only works for lang_java")
         )

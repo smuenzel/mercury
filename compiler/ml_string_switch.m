@@ -477,6 +477,10 @@ create_nested_switch_trie(TaggedCases, Context, VarRval, MaxCaseNum,
     ;
         Target = ml_target_csharp,
         CompilationTarget = target_csharp
+    ;
+    % FIXME: we don't need a trie
+        Target = ml_target_ocaml,
+        CompilationTarget = target_ocaml
     ),
     Encoding = target_string_encoding(CompilationTarget),
     create_trie(Encoding, TaggedCases, MaxCaseNum, TopTrieNode),
