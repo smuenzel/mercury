@@ -542,6 +542,7 @@ convert_foreign_language_2("csharp", lang_csharp).
 convert_foreign_language_2("c sharp", lang_csharp).
 convert_foreign_language_2("java", lang_java).
 convert_foreign_language_2("ocaml", lang_ocaml).
+convert_foreign_language_2("OCaml", lang_ocaml).
 
 convert_gc_method("none", gc_none).
 convert_gc_method("conservative", gc_boehm).

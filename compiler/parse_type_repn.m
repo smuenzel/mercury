@@ -1732,11 +1732,11 @@ ok_if_arity_zero(AtomStr, TermContext, ArgTerms, FillKindSize,
 % We now therefore generate this information in another form that *does*
 % encode this invariant. Specifically, we now generate either
 %
-%   no_c_j_cs
+%   no_c_j_cs_ml
 %
 % or a term of the form
 %
-%   c_j_cs(MaybeC, MaybeJava, MaybeCsharp)
+%   c_j_cs_ml(MaybeC, MaybeJava, MaybeCsharp, MaybeOcaml)
 %
 % where all of the MaybeXs have the same structure and none of them mention
 % what foreign language they are for, that information being implicit
@@ -1749,12 +1749,14 @@ ok_if_arity_zero(AtomStr, TermContext, ArgTerms, FillKindSize,
 parse_c_j_cs_ml_repn_or_enum(DescPieces, VarSet, Term, MaybeCJCsRepnOrEnum) :-
     ( if
         Term = term.functor(term.atom(AtomStr), ArgTerms, TermContext),
-        ( AtomStr = "no_c_j_cs"
+        ( AtomStr = "no_c_j_cs_ml"
+        ; AtomStr = "no_c_j_cs"
+        ; AtomStr = "c_j_cs_ml"
         ; AtomStr = "c_j_cs"
         )
     then
         (
-            AtomStr = "no_c_j_cs",
+            ( AtomStr = "no_c_j_cs_ml"; AtomStr = "no_c_j_cs"),
             (
                 ArgTerms = [],
                 CJCsRepnOrEnum = c_java_csharp_ocaml(no, no, no, no),
@@ -1769,44 +1771,55 @@ parse_c_j_cs_ml_repn_or_enum(DescPieces, VarSet, Term, MaybeCJCsRepnOrEnum) :-
                 MaybeCJCsRepnOrEnum = error1([Spec])
             )
         ;
-            AtomStr = "c_j_cs",
+            ( AtomStr = "c_j_cs"; AtomStr = "c_j_cs_ml"),
             (
-                ArgTerms = [ArgTerm1, ArgTerm2, ArgTerm3],
-                parse_maybe_enum_foreign_repn(DescPieces, 1,
-                    VarSet, ArgTerm1, MaybeMaybeRepnOrEnumC),
-                parse_maybe_enum_foreign_repn(DescPieces, 2,
-                    VarSet, ArgTerm2, MaybeMaybeRepnOrEnumJava),
-                parse_maybe_enum_foreign_repn(DescPieces, 3,
-                    VarSet, ArgTerm3, MaybeMaybeRepnOrEnumCsharp),
-                parse_maybe_enum_foreign_repn(DescPieces, 4,
-                    VarSet, ArgTerm2, MaybeMaybeRepnOrEnumOcaml),
-                ( if
-                    MaybeMaybeRepnOrEnumC = ok1(MaybeRepnOrEnumC),
-                    MaybeMaybeRepnOrEnumJava = ok1(MaybeRepnOrEnumJava),
-                    MaybeMaybeRepnOrEnumCsharp = ok1(MaybeRepnOrEnumCsharp),
-                    MaybeMaybeRepnOrEnumOcaml = ok1(MaybeRepnOrEnumOcaml)
-                then
-                    CJCsRepnOrEnum = c_java_csharp_ocaml(MaybeRepnOrEnumC,
-                        MaybeRepnOrEnumJava, MaybeRepnOrEnumCsharp,
-                        MaybeRepnOrEnumOcaml),
-                    MaybeCJCsRepnOrEnum = ok1(CJCsRepnOrEnum)
-                else
-                    Specs =
-                        get_any_errors1(MaybeMaybeRepnOrEnumC) ++
-                        get_any_errors1(MaybeMaybeRepnOrEnumJava) ++
-                        get_any_errors1(MaybeMaybeRepnOrEnumCsharp) ++
-                        get_any_errors1(MaybeMaybeRepnOrEnumOcaml),
-                    MaybeCJCsRepnOrEnum = error1(Specs)
+                (
+                    AtomStr = "c_j_cs",
+                    ArgTerms = [ArgTerm1, ArgTerm2, ArgTerm3],
+                    MaybeMaybeRepnOrEnumOcaml = ok1(no)
+                ;
+                    AtomStr = "c_j_cs_ml",
+                    ArgTerms = [ArgTerm1, ArgTerm2, ArgTerm3, ArgTerm4],
+                    parse_maybe_enum_foreign_repn(DescPieces, 4,
+                        VarSet, ArgTerm4, MaybeMaybeRepnOrEnumOcaml)
+                ),
+                (
+                    parse_maybe_enum_foreign_repn(DescPieces, 1,
+                        VarSet, ArgTerm1, MaybeMaybeRepnOrEnumC),
+                    parse_maybe_enum_foreign_repn(DescPieces, 2,
+                        VarSet, ArgTerm2, MaybeMaybeRepnOrEnumJava),
+                    parse_maybe_enum_foreign_repn(DescPieces, 3,
+                        VarSet, ArgTerm3, MaybeMaybeRepnOrEnumCsharp),
+                    ( if
+                        MaybeMaybeRepnOrEnumC = ok1(MaybeRepnOrEnumC),
+                        MaybeMaybeRepnOrEnumJava = ok1(MaybeRepnOrEnumJava),
+                        MaybeMaybeRepnOrEnumCsharp = ok1(MaybeRepnOrEnumCsharp),
+                        MaybeMaybeRepnOrEnumOcaml = ok1(MaybeRepnOrEnumOcaml)
+                    then
+                        CJCsRepnOrEnum = c_java_csharp_ocaml(MaybeRepnOrEnumC,
+                            MaybeRepnOrEnumJava, MaybeRepnOrEnumCsharp,
+                            MaybeRepnOrEnumOcaml),
+                        MaybeCJCsRepnOrEnum = ok1(CJCsRepnOrEnum)
+                    else
+                        Specs =
+                            get_any_errors1(MaybeMaybeRepnOrEnumC) ++
+                            get_any_errors1(MaybeMaybeRepnOrEnumJava) ++
+                            get_any_errors1(MaybeMaybeRepnOrEnumCsharp) ++
+                            get_any_errors1(MaybeMaybeRepnOrEnumOcaml),
+                        MaybeCJCsRepnOrEnum = error1(Specs)
+                    )
                 )
             ;
                 ( ArgTerms = []
                 ; ArgTerms = [_]
                 ; ArgTerms = [_, _]
-                ; ArgTerms = [_, _, _, _ | _]
+                ; (ArgTerms = [_, _, _], AtomStr = "c_j_cs_ml")
+                ; (ArgTerms = [_, _, _, _], AtomStr = "c_j_cs")
+                ; ArgTerms = [_, _, _, _, _| _]
                 ),
                 Pieces = [words("In")] ++ DescPieces ++ [suffix(":"),
                     words("error:"), quote(AtomStr),
-                    words("should have three arguments."), nl],
+                    words("should have three/four arguments."), nl],
                 Spec = simplest_spec($pred, severity_error,
                     phase_term_to_parse_tree, TermContext, Pieces),
                 MaybeCJCsRepnOrEnum = error1([Spec])
@@ -1815,7 +1828,7 @@ parse_c_j_cs_ml_repn_or_enum(DescPieces, VarSet, Term, MaybeCJCsRepnOrEnum) :-
     else
         TermStr = describe_error_term(VarSet, Term),
         Pieces = [words("In")] ++ DescPieces ++ [suffix(":"),
-            words("error: expected either"), quote("no_c_j_cs"),
+            words("error: expected either"), quote("no_c_j_cs_ml"),
             words("or"), quote("c_j_cs(...)"), suffix(","),
             words("got"), quote(TermStr), suffix("."), nl],
         Spec = simplest_spec($pred, severity_error, phase_term_to_parse_tree,
@@ -1829,12 +1842,14 @@ parse_c_j_cs_ml_repn_or_enum(DescPieces, VarSet, Term, MaybeCJCsRepnOrEnum) :-
 parse_c_j_cs_ml_repn(DescPieces, VarSet, Term, MaybeCJCsRepn) :-
     ( if
         Term = term.functor(term.atom(AtomStr), ArgTerms, TermContext),
-        ( AtomStr = "no_c_j_cs"
+        ( AtomStr = "no_c_j_cs_ml"
+        ; AtomStr = "c_j_cs_ml"
+        ; AtomStr = "no_c_j_cs"
         ; AtomStr = "c_j_cs"
         )
     then
         (
-            AtomStr = "no_c_j_cs",
+            ( AtomStr = "no_c_j_cs_ml"; AtomStr = "no_c_j_cs"),
             (
                 ArgTerms = [],
                 CJCsRepn = c_java_csharp_ocaml(no, no, no, no),
@@ -1849,17 +1864,24 @@ parse_c_j_cs_ml_repn(DescPieces, VarSet, Term, MaybeCJCsRepn) :-
                 MaybeCJCsRepn = error1([Spec])
             )
         ;
-            AtomStr = "c_j_cs",
+            (AtomStr = "c_j_cs_ml"; AtomStr = "c_j_cs"),
             (
-                ArgTerms = [ArgTerm1, ArgTerm2, ArgTerm3],
+                (
+                    AtomStr = "c_j_cs",
+                    ArgTerms = [ArgTerm1, ArgTerm2, ArgTerm3],
+                    MaybeMaybeRepnOcaml = ok1(no)
+                ;
+                    AtomStr = "c_j_cs_ml",
+                    ArgTerms = [ArgTerm1, ArgTerm2, ArgTerm3, ArgTerm4],
+                    parse_maybe_foreign_repn(DescPieces, 4,
+                        VarSet, ArgTerm4, MaybeMaybeRepnOcaml)
+                ),
                 parse_maybe_foreign_repn(DescPieces, 1,
                     VarSet, ArgTerm1, MaybeMaybeRepnC),
                 parse_maybe_foreign_repn(DescPieces, 2,
                     VarSet, ArgTerm2, MaybeMaybeRepnJava),
                 parse_maybe_foreign_repn(DescPieces, 3,
                     VarSet, ArgTerm3, MaybeMaybeRepnCsharp),
-                parse_maybe_foreign_repn(DescPieces, 4,
-                    VarSet, ArgTerm2, MaybeMaybeRepnOcaml),
                 ( if
                     MaybeMaybeRepnC = ok1(MaybeRepnC),
                     MaybeMaybeRepnJava = ok1(MaybeRepnJava),
@@ -1881,11 +1903,13 @@ parse_c_j_cs_ml_repn(DescPieces, VarSet, Term, MaybeCJCsRepn) :-
                 ( ArgTerms = []
                 ; ArgTerms = [_]
                 ; ArgTerms = [_, _]
-                ; ArgTerms = [_, _, _, _ | _]
+                ; (ArgTerms = [_, _, _], AtomStr = "c_j_cs_ml")
+                ; (ArgTerms = [_, _, _, _], AtomStr = "c_j_cs")
+                ; ArgTerms = [_, _, _, _, _ | _]
                 ),
                 Pieces = [words("In")] ++ DescPieces ++ [suffix(":"),
                     words("error:"), quote(AtomStr),
-                    words("should have three arguments."), nl],
+                    words("should have three/four arguments."), nl],
                 Spec = simplest_spec($pred, severity_error,
                     phase_term_to_parse_tree, TermContext, Pieces),
                 MaybeCJCsRepn = error1([Spec])
@@ -1894,7 +1918,7 @@ parse_c_j_cs_ml_repn(DescPieces, VarSet, Term, MaybeCJCsRepn) :-
     else
         TermStr = describe_error_term(VarSet, Term),
         Pieces = [words("In")] ++ DescPieces ++ [suffix(":"),
-            words("error: expected either"), quote("no_c_j_cs"),
+            words("error: expected either"), quote("no_c_j_cs_ml"),
             words("or"), quote("c_j_cs(...)"), suffix(","),
             words("got"), quote(TermStr), suffix("."), nl],
         Spec = simplest_spec($pred, severity_error, phase_term_to_parse_tree,

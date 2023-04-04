@@ -3262,7 +3262,7 @@ special_handler(Option, SpecialData, !.OptionTable, Result, !OptOptions) :-
             ( if convert_grade_option(Grade, !OptionTable) then
                 Result = ok(!.OptionTable)
             else
-                Result = error("invalid grade `" ++ Grade ++ "'")
+                Result = error("Invalid grade `" ++ Grade ++ "'")
             )
         ;
             Option = linkage_special,
